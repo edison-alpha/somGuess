@@ -1,7 +1,11 @@
 import { GameInterface } from '@/components/GameInterface';
 
 const Index = () => {
-  return <GameInterface />;
+  return (
+    <div className="min-h-screen bg-background">
+      <GameInterface />
+    </div>
+  );
 };
 
 export default Index;

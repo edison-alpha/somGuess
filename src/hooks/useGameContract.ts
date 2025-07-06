@@ -10,6 +10,7 @@ export interface GameState {
   betAmount: number;
   secret: string;
   commitment: string;
+  commitId: number | null;
   txHash: string | null;
   isWaiting: boolean;
 }
@@ -24,6 +25,7 @@ export function useGameContract() {
     betAmount: 0.001,
     secret: '',
     commitment: '',
+    commitId: null,
     txHash: null,
     isWaiting: false,
   });
@@ -88,6 +90,7 @@ export function useGameContract() {
         betAmount,
         secret,
         commitment,
+        commitId: 1, // TODO: Get actual commitId from transaction result/events
         txHash: 'pending',
       }));
 
@@ -111,10 +114,10 @@ export function useGameContract() {
 
   // Reveal game (second phase of commit-reveal)
   const revealGame = useCallback(async () => {
-    if (!gameState.selectedNumber || !gameState.secret) {
+    if (!gameState.selectedNumber || !gameState.secret || gameState.commitId === null) {
       toast({
         title: "Invalid Game State",
-        description: "No game to reveal",
+        description: "No game to reveal or missing commit ID",
         variant: "destructive",
       });
       return false;
@@ -129,7 +132,7 @@ export function useGameContract() {
         address: GAME_CONTRACT_ADDRESS,
         abi: GAME_CONTRACT_ABI,
         functionName: 'revealGame',
-        args: [BigInt(gameState.selectedNumber), secretHash],
+        args: [BigInt(gameState.commitId), BigInt(gameState.selectedNumber), secretHash],
       } as any);
 
       toast({
@@ -148,7 +151,7 @@ export function useGameContract() {
       setGameState(prev => ({ ...prev, isWaiting: false }));
       return false;
     }
-  }, [gameState.selectedNumber, gameState.secret, writeContract, toast]);
+  }, [gameState.selectedNumber, gameState.secret, gameState.commitId, writeContract, toast]);
 
   // Reset game state
   const resetGame = useCallback(() => {
@@ -158,6 +161,7 @@ export function useGameContract() {
       betAmount: 0.001,
       secret: '',
       commitment: '',
+      commitId: null,
       txHash: null,
       isWaiting: false,
     });

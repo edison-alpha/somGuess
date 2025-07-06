@@ -105,143 +105,151 @@ export function GameInterface() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-background">
       <div className="w-full max-w-md mx-auto space-y-8">
-        {/* Header */}
+        {/* Header with integrated wallet */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-4"
         >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            className="w-12 h-12 mx-auto text-neon-purple"
-          >
-            <Zap size={48} />
-          </motion.div>
+          <div className="flex items-center justify-between">
+            <div className="flex-1" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="w-12 h-12 text-neon-purple"
+            >
+              <Zap size={48} />
+            </motion.div>
+            <div className="flex-1 flex justify-end">
+              <div className="scale-75">
+                <ConnectButton />
+              </div>
+            </div>
+          </div>
           <h1 className="text-3xl font-bold bg-gradient-gaming bg-clip-text text-transparent">
             STT Guess Game
           </h1>
-          {!isConnected && (
-            <p className="text-muted-foreground">
-              Connect wallet to start playing
-            </p>
-          )}
         </motion.div>
 
-        {/* Wallet Connection */}
-        <div className="flex justify-center">
-          <ConnectButton />
-        </div>
-
-        {isConnected && (
-          <>
-            {/* Game Cards - Centered and Larger */}
-            <Card className="bg-gradient-card border-2 border-border shadow-card p-6">
-              <div className="flex justify-center gap-6 mb-6">
-                <AnimatePresence>
-                  {gameNumbers.map((number, index) => (
-                    <motion.div
-                      key={`${number}-${index}`}
-                      initial={{ opacity: 0, rotateY: -90 }}
-                      animate={{ opacity: 1, rotateY: 0 }}
-                      exit={{ opacity: 0, rotateY: 90 }}
-                      transition={{ delay: index * 0.2 }}
-                    >
-                      <div className="scale-125">
-                        <GameCard
-                          number={number}
-                          isSelected={gameState.selectedNumber === number}
-                          isRevealed={gamePhase === 'revealed'}
-                          isWinning={gamePhase === 'revealed' && winningNumber === number}
-                          onClick={() => handleNumberSelect(number)}
-                          disabled={gamePhase !== 'select'}
-                        />
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-
-              {/* Game Status */}
-              <div className="text-center space-y-2">
-                {gamePhase === 'select' && (
-                  <p className="text-sm text-muted-foreground">
-                    Choose your lucky number
-                  </p>
-                )}
-                {gamePhase === 'committed' && (
-                  <p className="text-sm text-neon-cyan animate-pulse">
-                    Waiting for reveal...
-                  </p>
-                )}
-                {gamePhase === 'revealed' && (
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Winner: <span className="text-neon-green font-bold text-lg">{winningNumber}</span>
-                    </p>
-                    {winningNumber === gameState.selectedNumber ? (
-                      <p className="text-lg font-bold text-neon-green">
-                        🎉 You Won {(gameState.betAmount * winMultiplier).toFixed(3)} STT!
-                      </p>
-                    ) : (
-                      <p className="text-lg font-bold text-destructive">
-                        Better luck next time!
-                      </p>
-                    )}
+        {/* Game Cards - Always shown */}
+        <Card className="bg-gradient-card border-2 border-border shadow-card p-6">
+          <div className="flex justify-center gap-6 mb-6">
+            <AnimatePresence>
+              {gameNumbers.map((number, index) => (
+                <motion.div
+                  key={`${number}-${index}`}
+                  initial={{ opacity: 0, rotateY: -90 }}
+                  animate={{ opacity: 1, rotateY: 0 }}
+                  exit={{ opacity: 0, rotateY: 90 }}
+                  transition={{ delay: index * 0.2 }}
+                >
+                  <div className="scale-125">
+                    <GameCard
+                      number={number}
+                      isSelected={gameState.selectedNumber === number}
+                      isRevealed={gamePhase === 'revealed'}
+                      isWinning={gamePhase === 'revealed' && winningNumber === number}
+                      onClick={() => handleNumberSelect(number)}
+                      disabled={gamePhase !== 'select' || !isConnected}
+                    />
                   </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Game Status */}
+          <div className="text-center space-y-2">
+            {!isConnected && (
+              <p className="text-sm text-muted-foreground">
+                Connect your wallet to start playing
+              </p>
+            )}
+            {isConnected && gamePhase === 'select' && (
+              <p className="text-sm text-muted-foreground">
+                Choose your lucky number
+              </p>
+            )}
+            {gamePhase === 'committed' && (
+              <p className="text-sm text-neon-cyan animate-pulse">
+                Waiting for reveal...
+              </p>
+            )}
+            {gamePhase === 'revealed' && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">
+                  Winner: <span className="text-neon-green font-bold text-lg">{winningNumber}</span>
+                </p>
+                {winningNumber === gameState.selectedNumber ? (
+                  <p className="text-lg font-bold text-neon-green">
+                    🎉 You Won {(gameState.betAmount * winMultiplier).toFixed(3)} STT!
+                  </p>
+                ) : (
+                  <p className="text-lg font-bold text-destructive">
+                    Better luck next time!
+                  </p>
                 )}
               </div>
-            </Card>
+            )}
+          </div>
+        </Card>
 
-            {/* Bet Input - Below Cards */}
-            <BetInput
-              value={gameState.betAmount}
-              onChange={(value) => setGameState(prev => ({ ...prev, betAmount: value }))}
-              min={minBet}
-              max={maxBet}
-              disabled={gamePhase !== 'select'}
-            />
+        {/* Bet Input - Always shown but disabled when not connected */}
+        <BetInput
+          value={gameState.betAmount}
+          onChange={(value) => setGameState(prev => ({ ...prev, betAmount: value }))}
+          min={minBet}
+          max={maxBet}
+          disabled={gamePhase !== 'select' || !isConnected}
+        />
 
-            {/* Action Button - Simple and Elegant */}
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              {gamePhase === 'select' && (
-                <Button
-                  className={cn(
-                    "w-full h-14 text-lg font-bold",
-                    "bg-gradient-gaming hover:shadow-neon transition-all duration-300",
-                    "disabled:opacity-50 disabled:cursor-not-allowed"
-                  )}
-                  onClick={handlePlayGame}
-                  disabled={!gameState.selectedNumber || isPending}
-                >
-                  <Dice2 className="mr-2" />
-                  {isPending ? "Processing..." : `Play (${gameState.betAmount} STT)`}
-                </Button>
+        {/* Action Button */}
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+          {!isConnected && (
+            <Button
+              className="w-full h-14 text-lg font-bold bg-muted hover:bg-muted/80 transition-all duration-300"
+              disabled
+            >
+              Connect Wallet to Play
+            </Button>
+          )}
+          
+          {isConnected && gamePhase === 'select' && (
+            <Button
+              className={cn(
+                "w-full h-14 text-lg font-bold",
+                "bg-gradient-gaming hover:shadow-neon transition-all duration-300",
+                "disabled:opacity-50 disabled:cursor-not-allowed"
               )}
+              onClick={handlePlayGame}
+              disabled={!gameState.selectedNumber || isPending}
+            >
+              <Dice2 className="mr-2" />
+              {isPending ? "Processing..." : `Play (${gameState.betAmount} STT)`}
+            </Button>
+          )}
 
-              {gamePhase === 'committed' && (
-                <Button
-                  className="w-full h-14 text-lg font-bold bg-gradient-gaming hover:shadow-neon transition-all duration-300"
-                  onClick={handleRevealGame}
-                  disabled={isPending}
-                >
-                  <Dice3 className="mr-2" />
-                  {isPending ? "Revealing..." : "Reveal Choice"}
-                </Button>
-              )}
+          {gamePhase === 'committed' && (
+            <Button
+              className="w-full h-14 text-lg font-bold bg-gradient-gaming hover:shadow-neon transition-all duration-300"
+              onClick={handleRevealGame}
+              disabled={isPending}
+            >
+              <Dice3 className="mr-2" />
+              {isPending ? "Revealing..." : "Reveal Choice"}
+            </Button>
+          )}
 
-              {gamePhase === 'revealed' && (
-                <Button
-                  className="w-full h-14 text-lg font-bold bg-gradient-gaming hover:shadow-neon transition-all duration-300"
-                  onClick={handleNewGame}
-                >
-                  <Trophy className="mr-2" />
-                  Play Again
-                </Button>
-              )}
-            </motion.div>
-          </>
-        )}
+          {gamePhase === 'revealed' && (
+            <Button
+              className="w-full h-14 text-lg font-bold bg-gradient-gaming hover:shadow-neon transition-all duration-300"
+              onClick={handleNewGame}
+            >
+              <Trophy className="mr-2" />
+              Play Again
+            </Button>
+          )}
+        </motion.div>
       </div>
     </div>
   );

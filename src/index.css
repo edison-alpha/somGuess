@@ -7,6 +7,10 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  * {
+    font-family: 'Poppins', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  }
+  
   :root {
     /* Gaming Dark Theme */
     --background: 220 15% 8%;
@@ -93,6 +97,149 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  
+  #root {
+    min-height: 100vh;
+  }
+}
+
+@layer utilities {
+  .perspective-1000 {
+    perspective: 1000px;
+  }
+  
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+  
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+  
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+  
+  /* Enhanced glow animations */
+  .animate-glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes glow-pulse {
+    0%, 100% { 
+      text-shadow: 0 0 10px currentColor,
+                   0 0 20px currentColor,
+                   0 0 30px currentColor;
+    }
+    50% { 
+      text-shadow: 0 0 20px currentColor,
+                   0 0 30px currentColor,
+                   0 0 40px currentColor,
+                   0 0 50px currentColor;
+    }
+  }
+  
+  /* Card hover effects */
+  .card-hover-glow {
+    transition: all 0.3s ease;
+  }
+  
+  .card-hover-glow:hover {
+    box-shadow: 0 0 30px rgba(139, 69, 19, 0.4),
+                0 0 60px rgba(139, 69, 19, 0.2),
+                0 0 90px rgba(139, 69, 19, 0.1);
+  }
+  
+  /* Gradient text animation */
+  .gradient-text-animated {
+    background: linear-gradient(45deg, 
+      hsl(var(--neon-purple)), 
+      hsl(var(--neon-cyan)), 
+      hsl(var(--neon-pink)), 
+      hsl(var(--neon-purple))
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 3s ease-in-out infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  
+  /* Floating sparkles */
+  .floating-sparkle {
+    animation: float-sparkle 4s ease-in-out infinite;
+  }
+  
+  @keyframes float-sparkle {
+    0%, 100% { 
+      transform: translateY(0px) rotate(0deg);
+      opacity: 0.4;
+    }
+    25% { 
+      transform: translateY(-10px) rotate(90deg);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: translateY(-5px) rotate(180deg);
+      opacity: 1;
+    }
+    75% { 
+      transform: translateY(-15px) rotate(270deg);
+      opacity: 0.6;
+    }
+  }
+
+  /* Floating animation for orbs */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { 
+      transform: translateY(0px) translateX(0px);
+    }
+    25% { 
+      transform: translateY(-20px) translateX(10px);
+    }
+    50% { 
+      transform: translateY(-10px) translateX(-10px);
+    }
+    75% { 
+      transform: translateY(-30px) translateX(5px);
+    }
+  }
+
+  /* Responsive improvements */
+  @media (max-width: 640px) {
+    .perspective-1000 {
+      perspective: 800px;
+    }
+    
+    /* Ensure game cards don't overflow on small screens */
+    .game-card-container {
+      min-width: 0;
+      flex-shrink: 1;
+    }
+    
+    /* Adjust modal padding on mobile */
+    .modal-content {
+      padding: 1rem !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .perspective-1000 {
+      perspective: 600px;
+    }
   }
 }

@@ -1,66 +1,57 @@
-import { useState, useCallback } from 'react';
-import { useAccount, useWriteContract, useReadContract } from 'wagmi';
-import { parseEther, keccak256, encodePacked, formatEther } from 'viem';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI } from '@/lib/web3';
+import { useState, useCallback, useEffect } from 'react';
+import { useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt, useConfig } from 'wagmi';
+import { parseEther, formatEther } from 'viem';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet } from '@/lib/web3';
 import { useToast } from '@/hooks/use-toast';
 
 export interface GameState {
   isPlaying: boolean;
   selectedNumber: number | null;
   betAmount: number;
-  secret: string;
-  commitment: string;
-  commitId: number | null;
   txHash: string | null;
   isWaiting: boolean;
+  gameResult: {
+    isWinner: boolean;
+    payout: number;
+  } | null;
 }
 
 export function useGameContract() {
   const { address } = useAccount();
+  const config = useConfig();
   const { toast } = useToast();
-  const { writeContract, isPending, isSuccess } = useWriteContract();
+  const { writeContract, isPending, data: hash } = useWriteContract();
   const [gameState, setGameState] = useState<GameState>({
     isPlaying: false,
     selectedNumber: null,
-    betAmount: 0.001,
-    secret: '',
-    commitment: '',
-    commitId: null,
+    betAmount: 0.01, // Set to minimum valid bet amount
     txHash: null,
     isWaiting: false,
+    gameResult: null,
   });
 
-  // Read contract data
-  const { data: minBet } = useReadContract({
-    address: GAME_CONTRACT_ADDRESS,
-    abi: GAME_CONTRACT_ABI,
-    functionName: 'minBet',
+  // Wait for transaction receipt
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
   });
 
-  const { data: maxBet } = useReadContract({
-    address: GAME_CONTRACT_ADDRESS,
-    abi: GAME_CONTRACT_ABI,
-    functionName: 'maxBet',
-  });
+  // Update transaction hash when available
+  useEffect(() => {
+    if (hash) {
+      setGameState(prev => ({
+        ...prev,
+        txHash: hash,
+      }));
+    }
+  }, [hash]);
 
-  const { data: winMultiplier } = useReadContract({
-    address: GAME_CONTRACT_ADDRESS,
-    abi: GAME_CONTRACT_ABI,
-    functionName: 'WIN_MULTIPLIER',
-  });
+  // Contract limits for your NumberGuess contract
+  const minBet = 0.01; // Minimum valid bet amount
+  const maxBet = 1.0;  // Maximum valid bet amount
+  const winMultiplier = 2; // 2x payout for correct guess
 
-  // Generate commitment for chosen number and secret
-  const generateCommitment = useCallback((chosenNumber: number) => {
-    const secret = Math.random().toString(36).substring(2, 15);
-    const commitment = keccak256(
-      encodePacked(['uint256', 'bytes32'], [BigInt(chosenNumber), keccak256(encodePacked(['string'], [secret]))])
-    );
-    
-    return { secret, commitment };
-  }, []);
-
-  // Commit game (first phase of commit-reveal)
-  const commitGame = useCallback(async (chosenNumber: number, betAmount: number) => {
+  // Play game directly (single transaction)
+  const playGame = useCallback(async (chosenNumber: number, betAmount: number) => {
     if (!address) {
       toast({
         title: "Connect Wallet",
@@ -70,113 +61,87 @@ export function useGameContract() {
       return false;
     }
 
-    try {
-      setGameState(prev => ({ ...prev, isWaiting: true }));
-      
-      const { secret, commitment } = generateCommitment(chosenNumber);
-      
-      writeContract({
-        address: GAME_CONTRACT_ADDRESS,
-        abi: GAME_CONTRACT_ABI,
-        functionName: 'commitGame',
-        args: [commitment],
-        value: parseEther(betAmount.toString()),
-      } as any);
+    // Validate number range (1-10)
+    if (chosenNumber < 1 || chosenNumber > 10) {
+      toast({
+        title: "Invalid Number",
+        description: "Please choose a number between 1 and 10",
+        variant: "destructive",
+      });
+      return false;
+    }
 
-      setGameState(prev => ({
-        ...prev,
-        isPlaying: true,
+    // Validate bet amount
+    const validAmounts = [0.01, 0.05, 0.1, 0.25, 0.5, 1.0];
+    if (!validAmounts.includes(betAmount)) {
+      toast({
+        title: "Invalid Bet Amount",
+        description: "Please choose a valid bet amount: 0.01, 0.05, 0.1, 0.25, 0.5, or 1.0 STT",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    try {
+      setGameState(prev => ({ 
+        ...prev, 
+        isWaiting: true, 
         selectedNumber: chosenNumber,
         betAmount,
-        secret,
-        commitment,
-        commitId: 1, // TODO: Get actual commitId from transaction result/events
-        txHash: 'pending',
+        isPlaying: true,
+        gameResult: null
       }));
-
-      toast({
-        title: "Game Committed!",
-        description: "Your bet has been placed. Wait for confirmation, then reveal your choice.",
-      });
-
-      return true;
-    } catch (error) {
-      console.error('Error committing game:', error);
-      toast({
-        title: "Transaction Failed",
-        description: "Failed to commit game. Please try again.",
-        variant: "destructive",
-      });
-      setGameState(prev => ({ ...prev, isWaiting: false }));
-      return false;
-    }
-  }, [address, generateCommitment, writeContract, toast]);
-
-  // Reveal game (second phase of commit-reveal)
-  const revealGame = useCallback(async () => {
-    if (!gameState.selectedNumber || !gameState.secret || gameState.commitId === null) {
-      toast({
-        title: "Invalid Game State",
-        description: "No game to reveal or missing commit ID",
-        variant: "destructive",
-      });
-      return false;
-    }
-
-    try {
-      setGameState(prev => ({ ...prev, isWaiting: true }));
-
-      const secretHash = keccak256(encodePacked(['string'], [gameState.secret]));
       
       writeContract({
         address: GAME_CONTRACT_ADDRESS,
         abi: GAME_CONTRACT_ABI,
-        functionName: 'revealGame',
-        args: [BigInt(gameState.commitId), BigInt(gameState.selectedNumber), secretHash],
-      } as any);
+        functionName: 'guessNumber',
+        args: [BigInt(chosenNumber)],
+        value: parseEther(betAmount.toString()),
+        account: address,
+        chain: somniaTestnet,
+      });
 
       toast({
-        title: "Game Revealed!",
-        description: "Your choice has been revealed. Checking results...",
+        title: "Game Started!",
+        description: "Your bet has been placed. Waiting for confirmation...",
       });
 
       return true;
     } catch (error) {
-      console.error('Error revealing game:', error);
+      console.error('Error playing game:', error);
       toast({
-        title: "Reveal Failed",
-        description: "Failed to reveal game. Please try again.",
+        title: "Transaction Failed",
+        description: "Failed to play game. Please try again.",
         variant: "destructive",
       });
-      setGameState(prev => ({ ...prev, isWaiting: false }));
+      setGameState(prev => ({ ...prev, isWaiting: false, isPlaying: false }));
       return false;
     }
-  }, [gameState.selectedNumber, gameState.secret, gameState.commitId, writeContract, toast]);
+  }, [address, writeContract, toast]);
 
   // Reset game state
   const resetGame = useCallback(() => {
     setGameState({
       isPlaying: false,
       selectedNumber: null,
-      betAmount: 0.001,
-      secret: '',
-      commitment: '',
-      commitId: null,
+      betAmount: 0.01, // Reset to minimum valid bet amount
       txHash: null,
       isWaiting: false,
+      gameResult: null,
     });
   }, []);
 
   return {
     gameState,
     setGameState,
-    commitGame,
-    revealGame,
+    playGame,
     resetGame,
-    minBet: minBet ? parseFloat(formatEther(minBet)) : 0.001,
-    maxBet: maxBet ? parseFloat(formatEther(maxBet)) : 5,
-    winMultiplier: winMultiplier ? Number(winMultiplier) : 2,
+    minBet,
+    maxBet,
+    winMultiplier,
     isPending,
-    isSuccess,
+    isConfirming,
+    isConfirmed,
   };
 }

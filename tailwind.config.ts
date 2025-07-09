@@ -18,6 +18,9 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'sans': ['Poppins', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -125,7 +128,41 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
-				}
+				},
+				// New gradient animation keyframes
+				moveHorizontal: {
+					"0%": {
+						transform: "translateX(-50%) translateY(-10%)",
+					},
+					"50%": {
+						transform: "translateX(50%) translateY(10%)",
+					},
+					"100%": {
+						transform: "translateX(-50%) translateY(-10%)",
+					},
+				},
+				moveInCircle: {
+					"0%": {
+						transform: "rotate(0deg)",
+					},
+					"50%": {
+						transform: "rotate(180deg)",
+					},
+					"100%": {
+						transform: "rotate(360deg)",
+					},
+				},
+				moveVertical: {
+					"0%": {
+						transform: "translateY(-50%)",
+					},
+					"50%": {
+						transform: "translateY(50%)",
+					},
+					"100%": {
+						transform: "translateY(-50%)",
+					},
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -134,7 +171,13 @@ export default {
 				'glow': 'glow 2s ease-in-out infinite',
 				'pulse-neon': 'pulse-neon 2s ease-in-out infinite',
 				'card-flip': 'card-flip 0.6s ease-in-out',
-				'bounce-in': 'bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+				'bounce-in': 'bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+				// New gradient animations
+				first: "moveVertical 30s ease infinite",
+				second: "moveInCircle 20s reverse infinite",
+				third: "moveInCircle 40s linear infinite",
+				fourth: "moveHorizontal 40s ease infinite",
+				fifth: "moveInCircle 20s ease infinite",
 			}
 		}
 	},

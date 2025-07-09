@@ -8,7 +8,9 @@ import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
 import { config } from '@/lib/web3';
 import Index from "./pages/Index";
+import History from "./pages/History";
 import NotFound from "./pages/NotFound";
+import { BackgroundGradientAnimationDemo } from "@/components/ui/demo";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/demo" element={<BackgroundGradientAnimationDemo />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

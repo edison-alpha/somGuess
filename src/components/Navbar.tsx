@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
+import somImage from '@/img/som.png';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -24,7 +25,7 @@ const Navbar: React.FC = () => {
           {/* Brand */}
           <div className="flex items-center space-x-3">
             <div className="relative flex items-center">
-              <img src="src/img/som.png" alt="Somnia Guess Logo" className="h-10 w-auto" />
+              <img src={somImage} alt="Somnia Guess Logo" className="h-10 w-auto" />
               <span className="ml-2 text-2xl font-bold text-white">somGuess</span>
             </div>
           </div>

@@ -3,6 +3,7 @@ import { Button } from './ui/button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
+import logo from '../img/logo.png';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,7 +29,7 @@ const Navbar: React.FC = () => {
           {/* Brand */}
           <div className="flex items-center space-x-3">
             <div className="relative flex items-center cursor-pointer" onClick={() => navigate('/') }>
-              <img src="src/img/logo.png" alt="Somnia Guess Logo" className="h-14 w-auto" />
+              <img src={logo} alt="Somnia Guess Logo" className="h-14 w-auto" />
             </div>
           </div>
 

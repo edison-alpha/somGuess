@@ -852,7 +852,7 @@ export function GameInterface() {
               rel="noopener noreferrer"
               className="text-neon hover:underline"
             >
-              somGuess
+              Guess
             </a>
             </p>
           <p className="text-xs opacity-70">© 2025 All rights reserved</p>

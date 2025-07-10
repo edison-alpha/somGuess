@@ -12,36 +12,42 @@ import History from "./pages/History";
 import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 import { BackgroundGradientAnimationDemo } from "@/components/ui/demo";
+import GradientMenu from "@/components/ui/gradient-menu";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <WagmiProvider config={config}>
-      <RainbowKitProvider 
-        theme={darkTheme({
-          accentColor: '#a855f7',
-          accentColorForeground: 'white',
-          borderRadius: 'large',
-        })}
-      >
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/history" element={<History />} />
-              <Route path="/leaderboard" element={<Leaderboard />} />
-              <Route path="/demo" element={<BackgroundGradientAnimationDemo />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </RainbowKitProvider>
-    </WagmiProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const isMobile = useIsMobile();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
+        <RainbowKitProvider 
+          theme={darkTheme({
+            accentColor: '#a855f7',
+            accentColorForeground: 'white',
+            borderRadius: 'large',
+          })}
+        >
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/history" element={<History />} />
+                <Route path="/leaderboard" element={<Leaderboard />} />
+                <Route path="/demo" element={<BackgroundGradientAnimationDemo />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              {isMobile && <GradientMenu />}
+            </BrowserRouter>
+          </TooltipProvider>
+        </RainbowKitProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

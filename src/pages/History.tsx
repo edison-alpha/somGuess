@@ -14,14 +14,26 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import somImage from '@/img/som.png';
+import { formatEther } from 'viem';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI } from '@/lib/web3';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
   const { address, isConnected } = useAccount();
   const { history, isLoading, error, stats: advancedStats, totalCount, refetch, exportData, fetchMore, fetchNetworkStats } = useGameHistory();
   const [viewMode, setViewMode] = useState<'overview' | 'detailed' | 'analytics'>('overview');
-  const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');
   const [networkStats, setNetworkStats] = useState<any>(null);
+
+  // GUNAKAN advancedStats dari useGameHistory untuk semua statistik
+  const totalGames = advancedStats ? advancedStats.totalGames : 0;
+  const totalWinnings = advancedStats ? advancedStats.totalWinnings.toFixed(4) : '0.0000';
+  const totalBets = advancedStats ? advancedStats.totalBetAmount.toFixed(4) : '0.0000';
+  const successfulGuesses = advancedStats ? advancedStats.totalWins : 0;
+  // Winrate sama dengan leaderboard: successfulGuesses / totalGames * 100
+  const winRate = advancedStats && advancedStats.totalGames > 0
+    ? ((advancedStats.totalWins / advancedStats.totalGames) * 100).toFixed(1)
+    : '0.0';
+  const netProfit = advancedStats ? advancedStats.netProfit.toFixed(4) : '0.0000';
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -59,9 +71,9 @@ const History: React.FC = () => {
     return { totalGames, wins, totalBet, totalWinnings, winRate, profit };
   };
 
-  const handleExport = () => {
-    exportData(exportFormat);
-  };
+  // const handleExport = () => {
+  //   exportData(exportFormat);
+  // };
 
   const legacyStats = getGameStats();
 
@@ -76,9 +88,22 @@ const History: React.FC = () => {
     loadNetworkStats();
   }, [fetchNetworkStats]);
 
+  // DEBUG: Log data to console for troubleshooting
+  useEffect(() => {
+    console.log('[History] history:', history);
+    console.log('[History] advancedStats:', advancedStats);
+    console.log('[History] error:', error);
+  }, [history, advancedStats, error]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <Navbar />
+      {/* DEBUG: Show error if exists */}
+      {error && (
+        <div className="bg-red-900/80 text-red-200 px-4 py-2 rounded mb-4 text-center">
+          <b>History Fetch Error:</b> {error}
+        </div>
+      )}
       
       {/* Animated Background */}
       <div className="absolute inset-0 -z-10">
@@ -90,6 +115,8 @@ const History: React.FC = () => {
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="max-w-6xl mx-auto">
+          {/* Judul utama Game History */}
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6 text-center">Game History</h2>
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -106,10 +133,6 @@ const History: React.FC = () => {
                 <ArrowLeft className="w-4 h-4" />
                 <span>Back to Game</span>
               </Button>
-              <div className="flex items-center space-x-3">
-                <Clock className="w-8 h-8 text-neon-blue" />
-                <h1 className="text-3xl md:text-4xl font-bold text-white">Game History</h1>
-              </div>
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -123,27 +146,7 @@ const History: React.FC = () => {
                 <span>Refresh</span>
               </Button>
               
-              {/* Export Controls */}
-              <div className="flex items-center space-x-2">
-                <select
-                  value={exportFormat}
-                  onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
-                  className="px-3 py-1 text-sm bg-slate-800 border border-slate-600 rounded text-white"
-                >
-                  <option value="json">JSON</option>
-                  <option value="csv">CSV</option>
-                </select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExport}
-                  disabled={isLoading || history.length === 0}
-                  className="flex items-center space-x-2 border-slate-600 text-white hover:bg-slate-800/50"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Export</span>
-                </Button>
-              </div>
+              {/* Export Controls dihapus sesuai permintaan */}
             </div>
           </motion.div>
 
@@ -159,6 +162,9 @@ const History: React.FC = () => {
             </Card>
           ) : (
             <>
+              {/* DEBUG: Show raw data if error or empty */}
+              {/* Blok debug dihapus sesuai permintaan */}
+
               {/* View Mode Selector */}
               <div className="flex items-center justify-center mb-6">
                 <div className="flex bg-slate-800/50 rounded-lg p-1">
@@ -187,14 +193,14 @@ const History: React.FC = () => {
               {/* Stats Cards - Enhanced */}
               {(viewMode === 'overview' || viewMode === 'analytics') && (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                       <Card className="bg-slate-900/50 border-slate-700/50 backdrop-blur-lg">
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">Total Games</p>
-                              <p className="text-2xl font-bold text-white">{legacyStats.totalGames}</p>
+                              <p className="text-2xl font-bold text-white">{Math.round(totalGames)}</p>
                               {totalCount > history.length && (
                                 <p className="text-xs text-slate-500">+{totalCount - history.length} more</p>
                               )}
@@ -211,7 +217,7 @@ const History: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">Win Rate</p>
-                              <p className="text-2xl font-bold text-neon-green">{legacyStats.winRate.toFixed(1)}%</p>
+                              <p className="text-2xl font-bold text-neon-green">{winRate}%</p>
                             </div>
                             <Trophy className="w-8 h-8 text-neon-green" />
                           </div>
@@ -225,7 +231,7 @@ const History: React.FC = () => {
                           <div className="flex items-center justify-between">
                             <div>
                               <p className="text-sm text-muted-foreground">Total Winnings</p>
-                              <p className="text-2xl font-bold text-neon-cyan">{legacyStats.totalWinnings.toFixed(4)} STT</p>
+                              <p className="text-2xl font-bold text-neon-cyan">{totalWinnings} STT</p>
                             </div>
                             <TrendingUp className="w-8 h-8 text-neon-cyan" />
                           </div>
@@ -241,12 +247,12 @@ const History: React.FC = () => {
                               <p className="text-sm text-muted-foreground">Net Profit</p>
                               <p className={cn(
                                 "text-2xl font-bold",
-                                legacyStats.profit >= 0 ? "text-neon-green" : "text-red-400"
+                                parseFloat(netProfit) >= 0 ? "text-neon-green" : "text-red-400"
                               )}>
-                                {legacyStats.profit >= 0 ? '+' : ''}{legacyStats.profit.toFixed(4)} STT
+                                {parseFloat(netProfit) >= 0 ? '+' : ''}{netProfit} STT
                               </p>
                             </div>
-                            {legacyStats.profit >= 0 ? (
+                            {parseFloat(netProfit) >= 0 ? (
                               <TrendingUp className="w-8 h-8 text-neon-green" />
                             ) : (
                               <TrendingDown className="w-8 h-8 text-red-400" />
@@ -418,105 +424,105 @@ const History: React.FC = () => {
                       </div>
                     </CardTitle>
                   </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="space-y-4">
-                      {Array.from({ length: 3 }).map((_, i) => (
-                        <div key={i} className="animate-pulse">
-                          <div className="h-20 bg-slate-800/50 rounded-lg"></div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : error ? (
-                    <div className="text-center py-8">
-                      <div className="text-red-400 mb-2">Error loading history</div>
-                      <p className="text-sm text-slate-500 mb-4">{error}</p>
-                      <p className="text-xs text-slate-600 mb-4">
-                        Note: Only recent games are shown due to network limitations
-                      </p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={refetch}
-                        disabled={isLoading}
-                        className="flex items-center space-x-2 border-slate-600 text-white hover:bg-slate-800/50"
-                      >
-                        <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
-                        <span>Try Again</span>
-                      </Button>
-                    </div>
-                  ) : history.length === 0 ? (
-                    <div className="text-center py-12">
-                      <Clock className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                      <h3 className="text-xl font-semibold text-white mb-2">No Games Yet</h3>
-                      <p className="text-slate-400 mb-6">Start playing to build your game history!</p>
-                      <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                        Play Your First Game
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {history.map((game: GameHistoryEntry, index: number) => (
-                        <motion.div
-                          key={game.txHash}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className={cn(
-                            "p-4 rounded-lg border transition-all duration-300",
-                            game.isWinner 
-                              ? "bg-green-900/20 border-green-600/30 hover:bg-green-900/30" 
-                              : "bg-red-900/20 border-red-600/30 hover:bg-red-900/30"
-                          )}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-4">
-                              <div className="flex items-center space-x-2">
-                                {game.isWinner ? (
-                                  <Trophy className="w-6 h-6 text-green-400" />
-                                ) : (
-                                  <Target className="w-6 h-6 text-red-400" />
-                                )}
-                                <Badge variant={game.isWinner ? "default" : "destructive"} className={cn(
-                                  game.isWinner 
-                                    ? "bg-green-600/20 text-green-400 border-green-600/30" 
-                                    : "bg-red-600/20 text-red-400 border-red-600/30"
-                                )}>
-                                  {game.isWinner ? "WIN" : "LOSE"}
-                                </Badge>
-                              </div>
-                              <div>
-                                <div className="flex items-center space-x-2 text-white">
-                                  <span className="font-medium">Numbers: {game.generatedNumbers.join(', ')}</span>
-                                  <span className="text-slate-400">|</span>
-                                  <span>Your pick: <span className="font-bold text-neon-blue">{game.userGuess}</span></span>
-                                  <span className="text-slate-400">|</span>
-                                  <span>Winner: <span className="font-bold text-neon-green">{game.correctNumber}</span></span>
-                                </div>
-                                <div className="flex items-center space-x-4 text-sm text-slate-400 mt-1">
-                                  <span>{formatDate(game.timestamp)}</span>
-                                  <span>Bet: {game.betAmount} STT</span>
-                                  {game.isWinner && <span className="text-green-400">Won: {game.payout} STT</span>}
-                                </div>
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <a
-                                href={getTxUrl(game.txHash)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
-                                title="View transaction"
-                              >
-                                <ExternalLink className="w-4 h-4 text-slate-400 hover:text-white" />
-                              </a>
-                            </div>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="space-y-4">
+                        {Array.from({ length: 3 }).map((_, i) => (
+                          <div key={i} className="animate-pulse">
+                            <div className="h-20 bg-slate-800/50 rounded-lg"></div>
                           </div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
+                        ))}
+                      </div>
+                    ) : error ? (
+                      <div className="text-center py-8">
+                        <div className="text-red-400 mb-2">Error loading history</div>
+                        <p className="text-sm text-slate-500 mb-4">{error}</p>
+                        <p className="text-xs text-slate-600 mb-4">
+                          Note: Only recent games are shown due to network limitations
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={refetch}
+                          disabled={isLoading}
+                          className="flex items-center space-x-2 border-slate-600 text-white hover:bg-slate-800/50"
+                        >
+                          <RefreshCw className={cn("w-4 h-4", isLoading && "animate-spin")} />
+                          <span>Try Again</span>
+                        </Button>
+                      </div>
+                    ) : history.length === 0 ? (
+                      <div className="text-center py-12">
+                        <Clock className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                        <h3 className="text-xl font-semibold text-white mb-2">No Games Yet</h3>
+                        <p className="text-slate-400 mb-6">Start playing to build your game history!</p>
+                        <Button onClick={() => navigate('/')} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                          Play Your First Game
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
+                        {history.map((game: GameHistoryEntry, index: number) => (
+                          <motion.div
+                            key={game.txHash}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className={cn(
+                              "p-4 rounded-lg border transition-all duration-300 min-w-[320px] sm:min-w-0",
+                              game.isWinner 
+                                ? "bg-green-900/20 border-green-600/30 hover:bg-green-900/30" 
+                                : "bg-red-900/20 border-red-600/30 hover:bg-red-900/30"
+                            )}
+                          >
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                              <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-2">
+                                  {game.isWinner ? (
+                                    <Trophy className="w-6 h-6 text-green-400" />
+                                  ) : (
+                                    <Target className="w-6 h-6 text-red-400" />
+                                  )}
+                                  <Badge variant={game.isWinner ? "default" : "destructive"} className={cn(
+                                    game.isWinner 
+                                      ? "bg-green-600/20 text-green-400 border-green-600/30" 
+                                      : "bg-red-600/20 text-red-400 border-red-600/30"
+                                  )}>
+                                    {game.isWinner ? "WIN" : "LOSE"}
+                                  </Badge>
+                                </div>
+                                <div>
+                                  <div className="flex flex-wrap items-center space-x-2 text-white text-sm md:text-base">
+                                    <span className="font-medium">Numbers: {game.generatedNumbers.join(', ')}</span>
+                                    <span className="text-slate-400">|</span>
+                                    <span>Your pick: <span className="font-bold text-neon-blue">{game.userGuess}</span></span>
+                                    <span className="text-slate-400">|</span>
+                                    <span>Winner: <span className="font-bold text-neon-green">{game.correctNumber}</span></span>
+                                  </div>
+                                  <div className="flex flex-wrap items-center space-x-4 text-xs md:text-sm text-slate-400 mt-1">
+                                    <span>{formatDate(game.timestamp)}</span>
+                                    <span>Bet: {game.betAmount} STT</span>
+                                    {game.isWinner && <span className="text-green-400">Won: {game.payout} STT</span>}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2 mt-2 md:mt-0">
+                                <a
+                                  href={getTxUrl(game.txHash)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
+                                  title="View transaction"
+                                >
+                                  <ExternalLink className="w-4 h-4 text-slate-400 hover:text-white" />
+                                </a>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
                 </Card>
               )}
             </>

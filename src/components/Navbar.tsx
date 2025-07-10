@@ -3,7 +3,6 @@ import { Button } from './ui/button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
-import somImage from '@/img/som.png';
 
 const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,13 +27,12 @@ const Navbar: React.FC = () => {
         <div className="flex justify-between items-center h-20">
           {/* Brand */}
           <div className="flex items-center space-x-3">
-            <div className="relative flex items-center">
-              <img src={somImage} alt="Somnia Guess Logo" className="h-10 w-auto" />
-              <span className="ml-2 text-2xl font-bold text-white">somGuess</span>
+            <div className="relative flex items-center cursor-pointer" onClick={() => navigate('/') }>
+              <img src="src/img/logo.png" alt="Somnia Guess Logo" className="h-14 w-auto" />
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links - only show on desktop */}
           <div className="hidden md:flex items-center space-x-6">
             <a
               href="https://discord.com/invite/somnia"
@@ -114,8 +112,18 @@ const Navbar: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden">
+          {/* ConnectButton - always show on mobile, right side */}
+          <div className="flex md:hidden items-center">
+            <div className="relative">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg blur opacity-25"></div>
+              <div className="relative">
+                <ConnectButton />
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile menu button - hidden on mobile, only for desktop */}
+          <div className="md:hidden hidden">
             <button
               type="button"
               onClick={toggleMobileMenu}
@@ -130,9 +138,9 @@ const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden">
+        {/* Mobile menu - hidden on mobile */}
+        <div className="md:hidden hidden">
+          {isMobileMenuOpen && (
             <div className="absolute left-0 right-0 top-full bg-black/40 backdrop-blur-xl border-b border-white/10">
               <div className="px-6 py-6 space-y-4">
                 <a
@@ -198,8 +206,8 @@ const Navbar: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );

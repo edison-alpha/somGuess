@@ -274,12 +274,12 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       const displayedNumbersText = availableNumbers.join(', ');
       if (simulatedResult.isWinner) {
         toast({
-          title: "🎉 You Won! (Fallback)",
+          title: "🎉 You Won!",
           description: `Congratulations! You won ${simulatedResult.payout.toFixed(3)} STT. Numbers: [${displayedNumbersText}] | Winner: ${simulatedResult.correctNumber}`,
         });
       } else {
         toast({
-          title: "Better Luck Next Time (Fallback)",
+          title: "Better Luck Next Time",
           description: `Numbers: [${displayedNumbersText}] | Winner: ${simulatedResult.correctNumber} | Your Choice: ${gameState.selectedNumber}`,
           variant: "destructive",
         });

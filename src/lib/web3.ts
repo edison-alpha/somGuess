@@ -26,14 +26,32 @@ export const config = getDefaultConfig({
   projectId: 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud
   chains: [somniaTestnet],
   transports: {
-    [somniaTestnet.id]: http(),
+    [somniaTestnet.id]: http('https://dream-rpc.somnia.network', {
+      batch: true,
+      retryCount: 3,
+      retryDelay: 500,
+    }),
   },
+  pollingInterval: 500, // Poll every 500ms for faster updates
 });
 
 // Game Contract Configuration  
-export const GAME_CONTRACT_ADDRESS = '0x57FdBa3F716d5AFc2fbd04BEf852885Cee7B85e2';
+export const GAME_CONTRACT_ADDRESS = '0xdB7E2Aa64304C52F86837438B49f3D7E3bE297f3';
 
 export const GAME_CONTRACT_ABI = [
+	{
+		"inputs": [],
+		"name": "generateNumbers",
+		"outputs": [
+			{
+				"internalType": "uint256[3]",
+				"name": "numbers",
+				"type": "uint256[3]"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [
 			{
@@ -63,20 +81,45 @@ export const GAME_CONTRACT_ABI = [
 			},
 			{
 				"indexed": false,
+				"internalType": "uint256[3]",
+				"name": "numbers",
+				"type": "uint256[3]"
+			}
+		],
+		"name": "NumbersGenerated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
 				"name": "betAmount",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
+				"internalType": "uint256[3]",
+				"name": "generatedNumbers",
+				"type": "uint256[3]"
+			},
+			{
+				"indexed": false,
 				"internalType": "uint256",
-				"name": "guess",
+				"name": "correctNumber",
 				"type": "uint256"
 			},
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "actualNumber",
+				"name": "userGuess",
 				"type": "uint256"
 			},
 			{
@@ -87,6 +130,25 @@ export const GAME_CONTRACT_ABI = [
 			}
 		],
 		"name": "GuessResult",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalWinnings",
+				"type": "uint256"
+			}
+		],
+		"name": "LeaderboardUpdated",
 		"type": "event"
 	},
 	{
@@ -127,12 +189,180 @@ export const GAME_CONTRACT_ABI = [
 	},
 	{
 		"inputs": [],
+		"name": "getCurrentGameNumbers",
+		"outputs": [
+			{
+				"internalType": "uint256[3]",
+				"name": "numbers",
+				"type": "uint256[3]"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "hasActiveGame",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getContractBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLeaderboard",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalWinnings",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct NumberGuess.LeaderboardEntry[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerStats",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalWinnings",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalBets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "successfulGuesses",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct NumberGuess.PlayerStats",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "leaderboard",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalWinnings",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "playerStats",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalWinnings",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalBets",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "successfulGuesses",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",

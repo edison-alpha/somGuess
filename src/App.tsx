@@ -9,6 +9,7 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { config } from '@/lib/web3';
 import Index from "./pages/Index";
 import History from "./pages/History";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 import { BackgroundGradientAnimationDemo } from "@/components/ui/demo";
 
@@ -31,6 +32,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/history" element={<History />} />
+              <Route path="/leaderboard" element={<Leaderboard />} />
               <Route path="/demo" element={<BackgroundGradientAnimationDemo />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

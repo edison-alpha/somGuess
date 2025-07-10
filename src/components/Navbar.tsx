@@ -14,6 +14,10 @@ const Navbar: React.FC = () => {
     navigate('/history');
   };
 
+  const handleLeaderboardClick = () => {
+    navigate('/leaderboard');
+  };
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -79,6 +83,24 @@ const Navbar: React.FC = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-medium">History</span>
+              </div>
+            </a>
+
+            <a
+              href="/leaderboard"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLeaderboardClick();
+              }}
+              className="group relative overflow-hidden rounded-full px-6 py-3 text-white transition-all duration-300 hover:scale-105"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 border border-white/10 rounded-full group-hover:border-white/30 transition-colors duration-300"></div>
+              <div className="relative flex items-center space-x-2">
+                <svg className="w-5 h-5 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span className="text-sm font-medium">Leaderboard</span>
               </div>
             </a>
 
@@ -154,6 +176,22 @@ const Navbar: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <span className="relative text-sm font-medium">History</span>
+                </a>
+                <a
+                  href="/leaderboard"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleLeaderboardClick();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="group relative overflow-hidden rounded-full px-6 py-3 text-white transition-all duration-300 flex items-center space-x-3 w-full"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute inset-0 border border-white/10 rounded-full group-hover:border-white/30 transition-colors duration-300"></div>
+                  <svg className="relative w-5 h-5 text-yellow-400 group-hover:text-yellow-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                  <span className="relative text-sm font-medium">Leaderboard</span>
                 </a>
                 <div className="pt-4 border-t border-white/10">
                   <ConnectButton />

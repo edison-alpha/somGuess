@@ -52,9 +52,11 @@ export function GameCard({
     >
       <Card
         className={cn(
-          "relative w-32 h-40 sm:w-36 sm:h-44 cursor-pointer transition-all duration-500 transform-gpu",
+          "relative cursor-pointer transition-all duration-500 transform-gpu",
           "border-2 overflow-hidden group rounded-xl",
-          "flex items-center justify-center text-3xl sm:text-4xl font-bold",
+          "flex items-center justify-center font-bold",
+          // Responsive sizing - made taller like playing cards (reduced slightly)
+          "w-20 h-28 text-xl sm:w-24 sm:h-32 sm:text-2xl md:w-28 md:h-40 md:text-3xl lg:w-32 lg:h-44 lg:text-4xl xl:w-36 xl:h-48 xl:text-5xl",
           // Base styling dengan crypto theme
           "bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 border-slate-600/50 shadow-2xl",
           // Hover effects
@@ -83,7 +85,7 @@ export function GameCard({
             className="absolute inset-0 opacity-10 bg-repeat bg-center"
             style={{
               backgroundImage: `url('${somImage}')`,
-              backgroundSize: '60px 60px sm:80px sm:80px'
+              backgroundSize: '35px 35px sm:45px sm:45px md:55px md:55px lg:65px lg:65px xl:75px xl:75px'
             }}
           />
           
@@ -95,13 +97,13 @@ export function GameCard({
           
           {/* Som image in corners dengan warna asli */}
           <div 
-            className="absolute top-2 left-2 w-6 h-6 sm:w-8 sm:h-8 bg-center bg-no-repeat bg-contain opacity-80"
+            className="absolute top-1 left-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 bg-center bg-no-repeat bg-contain opacity-80"
             style={{
               backgroundImage: `url('${somImage}')`
             }}
           />
           <div 
-            className="absolute bottom-2 right-2 w-6 h-6 sm:w-8 sm:h-8 bg-center bg-no-repeat bg-contain opacity-80 rotate-180"
+            className="absolute bottom-1 right-1 w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-7 lg:h-7 xl:w-8 xl:h-8 bg-center bg-no-repeat bg-contain opacity-80 rotate-180"
             style={{
               backgroundImage: `url('${somImage}')`
             }}
@@ -182,7 +184,8 @@ export function GameCard({
           className={cn(
             "relative z-10 transition-all duration-300",
             "text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-200 to-slate-300",
-            "filter drop-shadow-lg font-extrabold tracking-wide text-6xl",
+            "filter drop-shadow-lg font-extrabold tracking-wide",
+            "text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl",
             // Selected state
             isSelected && "from-neon-cyan via-neon-purple to-neon-pink animate-glow",
             // Winning state
@@ -220,10 +223,10 @@ export function GameCard({
         )}
 
         {/* Crypto-themed corner decorations */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-l-2 border-t-2 border-slate-500/50 rounded-tl-lg z-20" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-r-2 border-t-2 border-slate-500/50 rounded-tr-lg z-20" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-l-2 border-b-2 border-slate-500/50 rounded-bl-lg z-20" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-r-2 border-b-2 border-slate-500/50 rounded-br-lg z-20" />
+        <div className="absolute top-1 left-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 border-l-2 border-t-2 border-slate-500/50 rounded-tl-lg z-20" />
+        <div className="absolute top-1 right-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 border-r-2 border-t-2 border-slate-500/50 rounded-tr-lg z-20" />
+        <div className="absolute bottom-1 left-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 border-l-2 border-b-2 border-slate-500/50 rounded-bl-lg z-20" />
+        <div className="absolute bottom-1 right-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 border-r-2 border-b-2 border-slate-500/50 rounded-br-lg z-20" />
 
         {/* Winning celebration effect */}
         {isRevealed && isWinning && (

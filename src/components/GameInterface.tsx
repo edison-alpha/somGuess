@@ -60,7 +60,6 @@ export function GameInterface() {
     }
     
     const numbers = allNumbers.slice(0, 3);
-    console.log('Generated smart contract simulation numbers:', numbers);
     return numbers;
   };
 
@@ -80,7 +79,6 @@ export function GameInterface() {
   // Initialize game - start with number generation phase
   useEffect(() => {
     if (isConnected && gamePhase === 'generate' && gameNumbers.length === 0) {
-      console.log('Starting number generation phase...');
       // Don't auto-generate, wait for user to click generate
     }
   }, [isConnected, gamePhase, gameNumbers.length]);
@@ -88,7 +86,6 @@ export function GameInterface() {
   // Update game numbers when generated from smart contract
   useEffect(() => {
     if (generatedNumbers.length === 3) {
-      console.log('Received numbers from generation:', generatedNumbers);
       setGameNumbers(generatedNumbers);
       setNumbersSetFromContract(true);
       // Move to selection phase after numbers are generated
@@ -100,58 +97,36 @@ export function GameInterface() {
 
   // Handle transaction confirmation
   useEffect(() => {
-    console.log('Transaction status:', { isConfirmed, isPlaying: gameState.isPlaying });
     
     if (isConfirmed && gameState.isPlaying) {
       // Wait for contract event instead of simulating result
       // The useGameContract hook will handle the GuessResult event
       setGamePhase('playing'); // Keep in playing state until event received
-      console.log('Transaction confirmed, waiting for game result...');
     }
   }, [isConfirmed, gameState.isPlaying]);
 
   // Handle game result from contract event
   useEffect(() => {
-    console.log('Game result updated:', gameState.gameResult);
     
     if (gameState.gameResult && gameState.gameResult.actualNumber) {
       const { isWinner, actualNumber, displayedNumbers } = gameState.gameResult;
       
-      console.log('Processing game result:', { 
-        isWinner, 
-        actualNumber, 
-        displayedNumbers,
-        currentGameNumbers: gameNumbers,
-        userSelected: gameState.selectedNumber
-      });
-      
       // Update the displayed numbers with the actual numbers from the smart contract
       if (displayedNumbers && displayedNumbers.length === 3) {
-        console.log('✅ Updating displayed numbers:', displayedNumbers);
         setGameNumbers(displayedNumbers);
-      } else {
-        console.log('⚠️ No displayed numbers, using current game numbers:', gameNumbers);
-      }
+      } 
       
       // Verify that winning number is from the contract's displayed numbers
       const numbersToCheck = displayedNumbers && displayedNumbers.length === 3 ? displayedNumbers : gameNumbers;
       if (numbersToCheck.includes(actualNumber)) {
-        console.log('✅ Winning number displayed numbers:', actualNumber);
-        console.log('✅ Contract displayed numbers were:', numbersToCheck);
-        console.log('✅ User selected:', gameState.selectedNumber);
-        console.log('✅ Result:', isWinner ? 'WIN' : 'LOSE');
-      } else {
-        console.log('⚠️ Warning: Winning number not in contract displayed numbers');
-        console.log('⚠️ Winning number:', actualNumber);
-        console.log('⚠️ Displayed numbers:', numbersToCheck);
-      }
+        
+      } 
       
       setWinningNumber(actualNumber);
       setGamePhase('revealed');
 
       // Add delay to ensure cards are updated first
       setTimeout(() => {
-        console.log('Opening result modal...');
         
         if (isWinner) {
           setShowWinningModal(true);
@@ -164,7 +139,6 @@ export function GameInterface() {
 
   const handleNumberSelect = (number: number) => {
     if (gamePhase !== 'select') {
-      console.log('Number selection blocked - game phase is:', gamePhase);
       toast({
         title: "Generate Numbers First",
         description: "Please generate 3 numbers before selecting",
@@ -175,11 +149,8 @@ export function GameInterface() {
     
     // Only allow selection from the 3 displayed numbers
     if (!gameNumbers.includes(number)) {
-      console.log('Invalid number selection - not in displayed numbers:', number);
       return;
     }
-    
-    console.log('Number selected:', number, 'From displayed numbers:', gameNumbers);
     
     setGameState(prev => ({
       ...prev,
@@ -197,13 +168,11 @@ export function GameInterface() {
       return;
     }
 
-    console.log('Generating 3 numbers for the game...');
     setGamePhase('generate');
     
     try {
       const numbers = await generateNumbers();
       if (numbers && numbers.length === 3) {
-        console.log('Numbers generated successfully:', numbers);
         setGameNumbers(numbers);
         setGamePhase('select');
         toast({
@@ -251,20 +220,13 @@ export function GameInterface() {
       return;
     }
 
-    console.log('Starting game with:');
-    console.log('- Displayed numbers:', gameNumbers);
-    console.log('- User selected number:', gameState.selectedNumber);
-    console.log('- Bet amount:', gameState.betAmount);
-    
     setGameStarted(true); // Mark game as started to prevent number changes
     
     const success = await playGame(gameState.selectedNumber, gameState.betAmount);
     if (success) {
       setGamePhase('playing');
-      console.log('Game started successfully, waiting for transaction confirmation...');
     } else {
       setGameStarted(false); // Reset if game failed to start
-      console.log('Game failed to start');
     }
   };
 
@@ -287,7 +249,6 @@ export function GameInterface() {
     try {
       const numbers = await generateNumbers();
       if (numbers && numbers.length === 3) {
-        console.log('New game numbers generated:', numbers);
         setGameNumbers(numbers);
         setGamePhase('select');
       }

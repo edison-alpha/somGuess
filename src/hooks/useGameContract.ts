@@ -69,7 +69,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       setIsGeneratingNumbers(true);
       setGeneratedNumbers([]);
 
-      console.log('Calling generateNumbers on smart contract...');
       
       // Call the smart contract generateNumbers function
       writeContract({
@@ -83,7 +82,7 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       // Set timeout fallback in case contract event doesn't arrive
       setTimeout(() => {
         if (isGeneratingNumbers && generatedNumbers.length === 0) {
-          console.log('⚠️ Contract event timeout, using fallback numbers');
+          
           const allNumbers = Array.from({ length: 10 }, (_, i) => i + 1);
           for (let i = allNumbers.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -102,7 +101,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       }, 10000); // 10 second timeout
 
       // The numbers will be set via the NumbersGenerated event
-      console.log('Generate numbers transaction sent...');
       
       return [];
       
@@ -150,7 +148,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
   // Set timeout when transaction is confirmed to handle missing events
   useEffect(() => {
     if (isConfirmed && gameState.isPlaying) {
-      console.log('Transaction confirmed, setting up timeout and fallback check');
       
       // Clear any existing timeouts
       if (gameTimeoutId) {
@@ -162,7 +159,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       
       // Set primary timeout for 15 seconds (reduced for faster feedback)
       const timeoutId = setTimeout(() => {
-        console.log('Game timeout reached');
         if (gameState.isPlaying && !gameState.gameResult) {
           toast({
             title: "Game Timeout",
@@ -181,7 +177,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       
       // Set fallback check after 2 seconds (much faster)
       const fallbackId = setTimeout(() => {
-        console.log('Running fallback check');
         if (gameState.isPlaying && !gameState.gameResult) {
           // Try to manually check for recent events
           checkForGameResult();
@@ -208,22 +203,18 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
   // Fallback function to check for game result manually
   const checkForGameResult = useCallback(async () => {
     if (!address || !gameState.txHash) {
-      console.log('No address or txHash for fallback check');
       return;
     }
     
     try {
-      console.log('Executing fallback check for tx:', gameState.txHash);
       
       // Use the current displayed numbers (passed from GameInterface)
       let availableNumbers: number[];
       
       if (currentDisplayedNumbers && currentDisplayedNumbers.length === 3) {
         availableNumbers = currentDisplayedNumbers;
-        console.log('✅ Using current displayed numbers:', availableNumbers);
       } else if (generatedNumbers && generatedNumbers.length === 3) {
         availableNumbers = generatedNumbers;
-        console.log('✅ Using generated numbers:', availableNumbers);
       } else {
         // Final fallback: generate 3 random numbers from 1-10 range
         const allNumbers = Array.from({ length: 10 }, (_, i) => i + 1);
@@ -233,7 +224,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
           [allNumbers[i], allNumbers[j]] = [allNumbers[j], allNumbers[i]];
         }
         availableNumbers = allNumbers.slice(0, 3);
-        console.log('⚠️ Using final fallback 3 numbers:', availableNumbers);
       }
       
       // CRITICAL FIX: Pick winning number ONLY from the 3 available numbers
@@ -241,12 +231,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       const randomIndex = Math.floor(Math.random() * availableNumbers.length);
       const simulatedCorrectNumber = availableNumbers[randomIndex];
       
-      console.log('Fallback game result:', {
-        availableNumbers: availableNumbers,
-        selectedIndex: randomIndex,
-        winningNumber: simulatedCorrectNumber,
-        userGuess: gameState.selectedNumber,
-      });
       
       const simulatedResult = {
         isWinner: gameState.selectedNumber === simulatedCorrectNumber,
@@ -312,20 +296,15 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
     pollingInterval: 500,
     strict: false,
     onLogs(logs) {
-      console.log('NumbersGenerated events received:', logs);
       
       logs.forEach((log) => {
         const { player, numbers } = log.args;
-        
-        console.log('NumbersGenerated event args:', { player, numbers });
-        console.log('Current address:', address);
         
         // Only process events for current user
         if (player && address && player.toLowerCase() === address.toLowerCase()) {
           const contractNumbers = numbers ? numbers.map(n => Number(n)) : [];
           
           if (contractNumbers.length === 3) {
-            console.log('✅ Received numbers from contract:', contractNumbers);
             setGeneratedNumbers(contractNumbers);
             setIsGeneratingNumbers(false);
             
@@ -347,14 +326,10 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
     pollingInterval: 500, // Poll every 500ms for faster response
     strict: false, // Allow events from any block
     onLogs(logs) {
-      console.log('GuessResult events received:', logs);
       
       // Handle contract event
       logs.forEach((log) => {
         const { player, betAmount, generatedNumbers, correctNumber, userGuess, payout } = log.args;
-        
-        console.log('Event args:', { player, betAmount, generatedNumbers, correctNumber, userGuess, payout });
-        console.log('Current address:', address);
         
         // Only process events for current user
         if (player && address && player.toLowerCase() === address.toLowerCase()) {
@@ -394,15 +369,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
               finalCorrectNumber = isWinner ? Number(userGuess) : finalDisplayedNumbers.find(n => n !== Number(userGuess)) || finalDisplayedNumbers[0];
             }
           }
-          
-          console.log('Processing game result:', { 
-            isWinner, 
-            payoutInEth, 
-            finalCorrectNumber, 
-            finalDisplayedNumbers,
-            userGuess: Number(userGuess),
-            explanation: 'Using UI displayed numbers for consistency'
-          });
           
           setGameState(prev => ({
             ...prev,
@@ -485,7 +451,6 @@ export function useGameContract(currentDisplayedNumbers: number[] = []) {
       }));
       
       // Call guessNumber directly - the new contract generates numbers internally
-      console.log('Calling guessNumber with:', { chosenNumber, betAmount });
       writeContract({
         address: GAME_CONTRACT_ADDRESS,
         abi: GAME_CONTRACT_ABI,

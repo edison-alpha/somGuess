@@ -73,7 +73,6 @@ export function useGameHistory() {
         args: [address],
         chainId: somniaTestnet.id
       });
-      console.log('TXS:', txs); // Debug output
       // Adapt txs to GameHistoryEntry[]
       const historyEntries: GameHistoryEntry[] = (txs as any[]).map(tx => ({
         txHash: '', // No txHash, use empty string

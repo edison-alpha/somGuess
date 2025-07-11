@@ -15,7 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import somImage from '@/img/som.png';
 import { formatEther } from 'viem';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI } from '@/lib/web3';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 
 const History: React.FC = () => {
   const navigate = useNavigate();
@@ -30,9 +30,11 @@ const History: React.FC = () => {
   const totalBets = advancedStats ? advancedStats.totalBetAmount.toFixed(4) : '0.0000';
   const successfulGuesses = advancedStats ? advancedStats.totalWins : 0;
   // Winrate sama dengan leaderboard: successfulGuesses / totalGames * 100
-  const winRate = advancedStats && advancedStats.totalGames > 0
-    ? ((advancedStats.totalWins / advancedStats.totalGames) * 100).toFixed(1)
-    : '0.0';
+  const winRate = advancedStats && typeof advancedStats.winRate === 'number'
+    ? (advancedStats.winRate / 100).toFixed(1)
+    : (advancedStats && advancedStats.totalGames > 0
+        ? ((advancedStats.totalWins / advancedStats.totalGames)).toFixed(2)
+        : '0.0');
   const netProfit = advancedStats ? advancedStats.netProfit.toFixed(4) : '0.0000';
 
   const formatDate = (date: Date) => {
@@ -96,7 +98,7 @@ const History: React.FC = () => {
   }, [history, advancedStats, error]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a] via-[#33396C] to-[#0f172a]">
       <Navbar />
       {/* DEBUG: Show error if exists */}
       {error && (

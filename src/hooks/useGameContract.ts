@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useConfig, useWatchContractEvent, useReadContract } from 'wagmi';
 import { parseEther, formatEther } from 'viem';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet } from '@/lib/web3';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 import { useToast } from '@/hooks/use-toast';
 
 export interface GameState {

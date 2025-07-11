@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useWriteContract, useAccount, useBalance } from 'wagmi';
 import { parseEther } from 'viem';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet } from '@/lib/web3';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 import { useToast } from '@/hooks/use-toast';
 
 export const ContractTester: React.FC = () => {

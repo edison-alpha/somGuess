@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Crown, Medal, Star, TrendingUp } from 'lucide-react';
 import Navbar from '@/components/Navbar';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI } from '@/lib/web3';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 import { cn } from '@/lib/utils';
 import somImage from '@/img/som.png';
 
@@ -29,8 +29,8 @@ export default function Leaderboard() {
 
   // Fetch leaderboard data
   const { data: leaderboardData, isLoading: isLoadingLeaderboard, refetch: refetchLeaderboard } = useReadContract({
-    address: GAME_CONTRACT_ADDRESS,
-    abi: GAME_CONTRACT_ABI,
+    address: MANAGEMENT_CONTRACT_ADDRESS,
+    abi: MANAGEMENT_CONTRACT_ABI,
     functionName: 'getLeaderboard',
     query: { 
       enabled: true,
@@ -40,8 +40,8 @@ export default function Leaderboard() {
 
   // Fetch current player stats
   const { data: playerStatsData, isLoading: isLoadingPlayerStats, refetch: refetchPlayerStats } = useReadContract({
-    address: GAME_CONTRACT_ADDRESS,
-    abi: GAME_CONTRACT_ABI,
+    address: MANAGEMENT_CONTRACT_ADDRESS,
+    abi: MANAGEMENT_CONTRACT_ABI,
     functionName: 'getPlayerStats',
     args: address ? [address] : undefined,
     query: { 
@@ -96,7 +96,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a] via-[#33396C] to-[#0f172a]">
       <Navbar />
       
       {/* Animated Background */}

@@ -44,7 +44,7 @@ export function GameCard({
         rotateY: { duration: 0.8, ease: "easeInOut" },
         scale: { duration: 0.4 }
       }}
-      className="m-2 perspective-1000"
+      className="m-0 sm:m-2 perspective-1000" // margin sangat rapat di mobile
       style={{ 
         transformStyle: "preserve-3d",
         perspective: "1000px"
@@ -55,8 +55,8 @@ export function GameCard({
           "relative cursor-pointer transition-all duration-500 transform-gpu",
           "border-2 overflow-hidden group rounded-xl",
           "flex items-center justify-center font-bold",
-          // Responsive sizing - made taller like playing cards (reduced slightly)
-          "w-20 h-28 text-xl sm:w-24 sm:h-32 sm:text-2xl md:w-28 md:h-40 md:text-3xl lg:w-32 lg:h-44 lg:text-4xl xl:w-36 xl:h-48 xl:text-5xl",
+          // Responsive sizing - lebih besar di mobile
+          "w-32 h-44 text-3xl sm:w-24 sm:h-32 sm:text-2xl md:w-28 md:h-40 md:text-3xl lg:w-32 lg:h-44 lg:text-4xl xl:w-36 xl:h-48 xl:text-5xl",
           // Base styling dengan crypto theme
           "bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 border-slate-600/50 shadow-2xl",
           // Hover effects
@@ -208,10 +208,10 @@ export function GameCard({
               scale: [1, 1.05, 1],
               opacity: [0.6, 1, 0.6],
               borderColor: [
-                "hsl(var(--neon-purple) / 0.6)",
+                "hsl(var(--neon-blue) / 0.6)",
                 "hsl(var(--neon-cyan) / 0.8)",
                 "hsl(var(--neon-pink) / 0.6)",
-                "hsl(var(--neon-purple) / 0.6)"
+                "hsl(var(--neon-blue) / 0.6)"
               ]
             }}
             transition={{ 

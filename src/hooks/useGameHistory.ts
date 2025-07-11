@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAccount, useConfig } from 'wagmi';
 import { getPublicClient } from '@wagmi/core';
 import { formatEther } from 'viem';
-import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet, HISTORY_CONTRACT_ADDRESS, HISTORY_CONTRACT_ABI } from '@/lib/web3';
+import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, somniaTestnet, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 import { readContract } from '@wagmi/core';
 
 // Somnia Network API configuration
@@ -67,23 +67,16 @@ export function useGameHistory() {
     try {
       // Fetch player transactions
       const txs = await readContract(config, {
-        address: HISTORY_CONTRACT_ADDRESS,
-        abi: HISTORY_CONTRACT_ABI,
-        functionName: 'getPlayerTransactions',
+        address: MANAGEMENT_CONTRACT_ADDRESS,
+        abi: MANAGEMENT_CONTRACT_ABI,
+        functionName: 'getPlayerTransactionHistory',
         args: [address],
         chainId: somniaTestnet.id
       });
-      // Fetch player stats
-      const statsRaw = await readContract(config, {
-        address: HISTORY_CONTRACT_ADDRESS,
-        abi: HISTORY_CONTRACT_ABI,
-        functionName: 'getPlayerGameStats',
-        args: [address],
-        chainId: somniaTestnet.id
-      });
+      console.log('TXS:', txs); // Debug output
       // Adapt txs to GameHistoryEntry[]
       const historyEntries: GameHistoryEntry[] = (txs as any[]).map(tx => ({
-        txHash: tx.transactionId?.toString() || '', // No txHash, use id as string
+        txHash: '', // No txHash, use empty string
         blockNumber: 0n, // Not available
         timestamp: new Date(Number(tx.timestamp) * 1000),
         player: tx.player,
@@ -93,25 +86,34 @@ export function useGameHistory() {
         userGuess: Number(tx.userGuess),
         payout: formatEther(BigInt(tx.payout)),
         isWinner: tx.isWin,
+        gasUsed: tx.gasUsed ? formatEther(BigInt(tx.gasUsed)) : undefined,
       }));
       setHistory(historyEntries);
       setTotalCount(historyEntries.length);
+      // Fetch player stats
+      const statsRaw = await readContract(config, {
+        address: MANAGEMENT_CONTRACT_ADDRESS,
+        abi: MANAGEMENT_CONTRACT_ABI,
+        functionName: 'getPlayerStats',
+        args: [address],
+        chainId: somniaTestnet.id
+      });
       // Destructure statsRaw
-      const { totalGamesPlayed, totalWins, totalBetAmount } = statsRaw as any;
+      const { totalGames, totalWins, totalBets, successfulGuesses, winRate, netProfit, biggestWin, currentWinStreak, maxWinStreak, currentLoseStreak, maxLoseStreak, avgBet, totalGasSpent, favoriteNumber } = statsRaw as any;
       setStats({
-        totalGames: Number(totalGamesPlayed),
+        totalGames: Number(totalGames),
         totalWins: Number(totalWins),
-        totalLosses: Number(totalGamesPlayed) - Number(totalWins),
-        winRate: Number(totalGamesPlayed) > 0 ? (Number(totalWins) / Number(totalGamesPlayed)) * 100 : 0,
-        totalBetAmount: parseFloat(formatEther(BigInt(totalBetAmount))),
+        totalLosses: Number(totalGames) - Number(totalWins),
+        winRate: Number(winRate),
+        totalBetAmount: parseFloat(formatEther(BigInt(totalBets))),
         totalWinnings: historyEntries.reduce((sum, e) => sum + parseFloat(e.payout), 0),
-        netProfit: historyEntries.reduce((sum, e) => sum + parseFloat(e.payout), 0) - parseFloat(formatEther(BigInt(totalBetAmount))),
-        averageBet: historyEntries.length > 0 ? historyEntries.reduce((sum, e) => sum + parseFloat(e.betAmount), 0) / historyEntries.length : 0,
-        biggestWin: Math.max(...historyEntries.map(e => parseFloat(e.payout)), 0),
-        longestWinStreak: 0, // Optional: calculate if needed
-        longestLoseStreak: 0, // Optional: calculate if needed
-        favoriteNumber: 0, // Optional: calculate if needed
-        totalGasSpent: 0 // Not available
+        netProfit: Number(netProfit) ? parseFloat(formatEther(BigInt(netProfit))) : 0,
+        averageBet: Number(avgBet) ? parseFloat(formatEther(BigInt(avgBet))) : 0,
+        biggestWin: Number(biggestWin) ? parseFloat(formatEther(BigInt(biggestWin))) : 0,
+        longestWinStreak: Number(maxWinStreak) || 0,
+        longestLoseStreak: Number(maxLoseStreak) || 0,
+        favoriteNumber: Number(favoriteNumber) || 0,
+        totalGasSpent: Number(totalGasSpent) ? parseFloat(formatEther(BigInt(totalGasSpent))) : 0
       });
     } catch (err: any) {
       setError('Failed to fetch history from contract');

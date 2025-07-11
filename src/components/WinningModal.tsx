@@ -70,18 +70,18 @@ export function WinningModal({
     
     // Desktop
     return {
-      modal: 'max-w-2xl bg-slate-900/95 border-neon-green/50 backdrop-blur-xl',
-      cardScale: 'scale-100',
-      trophySize: 'w-16 h-16',
-      titleSize: 'text-3xl',
-      spacing: 'space-y-6',
-      cardContainer: 'py-6',
-      padding: 'p-4',
-      textSize: 'text-base',
-      buttonSize: 'text-lg py-3',
-      iconSize: 'w-5 h-5',
-      starCount: 12,
-      payoutText: 'text-4xl'
+      modal: 'max-w-xl bg-slate-900/95 border-neon-green/50 backdrop-blur-xl',
+      cardScale: 'scale-90',
+      trophySize: 'w-12 h-12',
+      titleSize: 'text-2xl',
+      spacing: 'space-y-2',
+      cardContainer: 'py-3',
+      padding: 'p-2',
+      textSize: 'text-sm',
+      buttonSize: 'text-base py-2',
+      iconSize: 'w-4 h-4',
+      starCount: 8,
+      payoutText: 'text-2xl'
     };
   };
 
@@ -121,7 +121,7 @@ export function WinningModal({
           
           <DialogTitle className={cn(
             responsive.titleSize,
-            "font-bold bg-gradient-to-r from-neon-green via-neon-cyan to-neon-green bg-clip-text text-transparent"
+            "font-bold text-neon-cyan text-center"
           )}>
             🎉 CONGRATULATIONS! 🎉
           </DialogTitle>
@@ -338,7 +338,7 @@ export function WinningModal({
             </Button>
             <Button
               className={cn(
-                "flex-1 bg-gradient-gaming hover:shadow-neon transition-all duration-300",
+                "flex-1 bg-neon-blue hover:shadow-neon-cyan transition-all duration-300",
                 "text-white font-bold",
                 responsive.buttonSize
               )}

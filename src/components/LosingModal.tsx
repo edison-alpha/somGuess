@@ -72,18 +72,18 @@ export function LosingModal({
     
     // Desktop
     return {
-      modal: 'max-w-2xl bg-slate-900/95 border-red-500/50 backdrop-blur-xl',
-      cardScale: 'scale-100',
-      skullSize: 'w-16 h-16',
-      titleSize: 'text-3xl',
-      spacing: 'space-y-6',
-      cardGap: 'gap-8',
-      padding: 'p-4',
-      textSize: 'text-base',
-      buttonSize: 'text-lg py-3',
-      iconSize: 'w-5 h-5',
-      particleCount: 12,
-      amountText: 'text-4xl'
+      modal: 'max-w-xl bg-slate-900/95 border-red-500/50 backdrop-blur-xl',
+      cardScale: 'scale-90',
+      skullSize: 'w-12 h-12',
+      titleSize: 'text-2xl',
+      spacing: 'space-y-2',
+      cardGap: 'gap-4',
+      padding: 'p-2',
+      textSize: 'text-sm',
+      buttonSize: 'text-base py-2',
+      iconSize: 'w-4 h-4',
+      particleCount: 8,
+      amountText: 'text-2xl'
     };
   };
 

@@ -1,0 +1,49 @@
+type GuessResult @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes!
+  betAmount: BigInt!
+  generatedNumbers: [BigInt!]!
+  correctNumber: BigInt!
+  userGuess: BigInt!
+  payout: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NumbersGenerated @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes!
+  numbers: [BigInt!]!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type LeaderboardEntry @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes!
+  totalWinnings: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PlayerStats @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes!
+  isWin: Boolean!
+  payout: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GameTransaction @entity(immutable: true) {
+  id: Bytes!
+  player: Bytes!
+  transactionId: BigInt!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

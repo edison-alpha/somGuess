@@ -6,17 +6,17 @@ export const somniaTestnet = {
   id: 50312,
   name: 'Somnia Testnet',
   nativeCurrency: {
-    decimals: 18,
-    name: 'STT',
-    symbol: 'STT',
+	decimals: 18,
+	name: 'STT',
+	symbol: 'STT',
   },
   rpcUrls: {
-    default: {
-      http: ['https://dream-rpc.somnia.network'],
-    },
+	default: {
+	  http: ['https://dream-rpc.somnia.network'],
+	},
   },
   blockExplorers: {
-    default: { name: 'Explorer', url: 'https://explorer.somnia.network' },
+	default: { name: 'Explorer', url: 'https://explorer.somnia.network' },
   },
   testnet: true,
 } as const;
@@ -26,18 +26,18 @@ export const config = getDefaultConfig({
   projectId: 'YOUR_PROJECT_ID', // Get from WalletConnect Cloud
   chains: [somniaTestnet],
   transports: {
-    [somniaTestnet.id]: http('https://dream-rpc.somnia.network', {
-      batch: true,
-      retryCount: 3,
-      retryDelay: 500,
-    }),
+	[somniaTestnet.id]: http('https://dream-rpc.somnia.network', {
+	  batch: true,
+	  retryCount: 3,
+	  retryDelay: 500,
+	}),
   },
   pollingInterval: 500, // Poll every 500ms for faster updates
 });
 
 // Game Contract Configuration  
 export const GAME_CONTRACT_ADDRESS = '0x9Df1FF687feD5993705022C6BCE82bbf7f5E7729';
-
+// Game Contract ABI
 export const GAME_CONTRACT_ABI = [
 	{
 		"inputs": [],
@@ -276,6 +276,1167 @@ export const GAME_CONTRACT_ABI = [
 		"type": "function"
 	}
 ] as const;
+
+// Badge Contract Configuration
+export const BADGE_CONTRACT_ADDRESS = '0xf4ab333aE14C8c10B078C9c917d3cd17844a2bcC';
+export const BADGE_CONTRACT_ABI = [
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_gameStatsContract",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_initialBaseURI",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_contractURI",
+				"type": "string"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "BadgeAlreadyMinted",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "ERC721EnumerableForbiddenBatchMint",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721IncorrectOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721InsufficientApproval",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "approver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidApprover",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOperator",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "receiver",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidReceiver",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "sender",
+				"type": "address"
+			}
+		],
+		"name": "ERC721InvalidSender",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721NonexistentToken",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "ERC721OutOfBoundsIndex",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "EmptyString",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidBadgeType",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "InvalidGameStatsContract",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "MetadataNotSet",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NoTransactions",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NotEligibleForBadge",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "OwnableInvalidOwner",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			}
+		],
+		"name": "OwnableUnauthorizedAccount",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "TokenNotExists",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "approved",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Approval",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "ApprovalForAll",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "badgeType",
+				"type": "uint8"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "imageIPFS",
+				"type": "string"
+			}
+		],
+		"name": "BadgeMetadataUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "badge",
+				"type": "uint8"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "badgeName",
+				"type": "string"
+			}
+		],
+		"name": "BadgeMinted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "newBaseURI",
+				"type": "string"
+			}
+		],
+		"name": "BaseURIUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "newContractURI",
+				"type": "string"
+			}
+		],
+		"name": "ContractURIUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "oldContract",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newContract",
+				"type": "address"
+			}
+		],
+		"name": "GameStatsContractUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "previousOwner",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "Transfer",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "approve",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"name": "badgeMetadata",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "imageIPFS",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "requiredTransactions",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			}
+		],
+		"name": "balanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contractURI",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "txCount",
+				"type": "uint256"
+			}
+		],
+		"name": "determineBadge",
+		"outputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "gameStatsContract",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "getApproved",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			}
+		],
+		"name": "getBadgeImageURI",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			}
+		],
+		"name": "getBadgeMetadata",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "name",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "description",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "imageIPFS",
+						"type": "string"
+					},
+					{
+						"internalType": "uint256",
+						"name": "requiredTransactions",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isActive",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GuessisBadgeNFT.BadgeMetadata",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getEligibleBadges",
+		"outputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType[]",
+				"name": "",
+				"type": "uint8[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerAllBadges",
+		"outputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType[]",
+				"name": "badgeTypes",
+				"type": "uint8[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "tokenIds",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "badgeNames",
+				"type": "string[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			},
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			}
+		],
+		"name": "getUserBadgeTokenId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"name": "hasMintedBadge",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			}
+		],
+		"name": "isApprovedForAll",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			},
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			}
+		],
+		"name": "isEligibleForBadge",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			}
+		],
+		"name": "mintBadge",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "name",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "ownerOf",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "data",
+				"type": "bytes"
+			}
+		],
+		"name": "safeTransferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "operator",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "approved",
+				"type": "bool"
+			}
+		],
+		"name": "setApprovalForAll",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "_badgeType",
+				"type": "uint8"
+			},
+			{
+				"internalType": "string",
+				"name": "_name",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_description",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_imageIPFS",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_requiredTransactions",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "_isActive",
+				"type": "bool"
+			}
+		],
+		"name": "setBadgeMetadata",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_newBaseURI",
+				"type": "string"
+			}
+		],
+		"name": "setBaseURI",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_newContractURI",
+				"type": "string"
+			}
+		],
+		"name": "setContractURI",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_gameStatsContract",
+				"type": "address"
+			}
+		],
+		"name": "setGameStatsContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes4",
+				"name": "interfaceId",
+				"type": "bytes4"
+			}
+		],
+		"name": "supportsInterface",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "symbol",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenByIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "owner",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenOfOwnerByIndex",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenToBadgeType",
+		"outputs": [
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenURI",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalSupply",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "transferFrom",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newOwner",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "enum GuessisBadgeNFT.BadgeType",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"name": "userBadgeTokenIds",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	}
+] as const;
+
+
 
 // Management/Stats/Leaderboard/History Contract Configuration
 export const MANAGEMENT_CONTRACT_ADDRESS = '0x38bB2473481017aD0D878fb4a8cb706dbF93e41D';

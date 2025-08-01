@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, Crown, Medal, Star, TrendingUp } from 'lucide-react';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { GAME_CONTRACT_ADDRESS, GAME_CONTRACT_ABI, MANAGEMENT_CONTRACT_ADDRESS, MANAGEMENT_CONTRACT_ABI } from '@/lib/web3';
 import { cn } from '@/lib/utils';
 import somImage from '@/img/som.png';
@@ -309,22 +310,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-transparent text-white text-center py-4 mt-8">
-        <div className="space-y-1">
-          <p className="text-sm">
-            Made with Fun by{" "}
-            <a
-              href="https://twitter.com/Somnia_Network"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neon hover:underline"
-            >
-              somGuess
-            </a>
-          </p>
-          <p className="text-xs opacity-70">© 2025 All rights reserved</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

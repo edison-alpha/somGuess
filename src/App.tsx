@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import History from "./pages/History";
 import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
+import Badge from "./pages/Badge";
 import { BackgroundGradientAnimationDemo } from "@/components/ui/demo";
 import GradientMenu from "@/components/ui/gradient-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -38,6 +39,7 @@ const App = () => {
                 <Route path="/history" element={<History />} />
                 <Route path="/leaderboard" element={<Leaderboard />} />
                 <Route path="/demo" element={<BackgroundGradientAnimationDemo />} />
+                <Route path="/badge" element={<Badge />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

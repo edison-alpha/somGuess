@@ -1,0 +1,55 @@
+specVersion: 0.0.4
+description: Subgraph for somGuess
+repository: https://github.com/edison-alpha/somGuess
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: NumberGuess
+    network: somnia-testnet
+    source:
+      address: "0x9Df1FF687feD5993705022C6BCE82bbf7f5E7729"
+      abi: NumberGuess
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: typescript
+      entities:
+        - GuessResult
+        - NumbersGenerated
+      abis:
+        - name: NumberGuess
+          file: NumberGuess\NumberGuess.json
+      eventHandlers:
+        - event: GuessResult(indexed address,uint256,uint256[3],uint256,uint256,uint256)
+          handler: handleGuessResult
+        - event: NumbersGenerated(indexed address,uint256[3])
+          handler: handleNumbersGenerated
+      file: NumberGuess\NumberGuess.wasm
+  - kind: ethereum/contract
+    name: Management
+    network: somnia-testnet
+    source:
+      address: "0x38bB2473481017aD0D878fb4a8cb706dbF93e41D"
+      abi: Management
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: typescript
+      entities:
+        - LeaderboardEntry
+        - PlayerStats
+        - GameTransaction
+      abis:
+        - name: Management
+          file: Management\Management.json
+      eventHandlers:
+        - event: LeaderboardUpdated(indexed address,uint256)
+          handler: handleLeaderboardUpdated
+        - event: StatsUpdated(indexed address,bool,uint256)
+          handler: handleStatsUpdated
+        - event: TransactionRecorded(indexed address,uint256)
+          handler: handleTransactionRecorded
+      file: NumberGuess\NumberGuess.wasm

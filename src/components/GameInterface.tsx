@@ -9,6 +9,7 @@ import { BetInput } from './BetInput';
 import { WinningModal } from './WinningModal';
 import { LosingModal } from './LosingModal';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import { useGameContract } from '@/hooks/useGameContract';
 import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -803,22 +804,7 @@ export function GameInterface() {
       )}
       
       {/* Footer */}
-      <footer className="bg-transparent text-white text-center py-4 mt-8">
-        <div className="space-y-1">
-            <p className="text-sm">
-            Made with Fun by{" "}
-            <a
-              href="https://twitter.com/Somnia_Network"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neon hover:underline"
-            >
-              Guess
-            </a>
-            </p>
-          <p className="text-xs opacity-70">© 2025 All rights reserved</p>
-        </div>
-      </footer>
+      <Footer />
       </div>
     </div>
   );

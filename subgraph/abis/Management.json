@@ -1,0 +1,658 @@
+[
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalWinnings",
+				"type": "uint256"
+			}
+		],
+		"name": "LeaderboardUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "isWin",
+				"type": "bool"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "payout",
+				"type": "uint256"
+			}
+		],
+		"name": "StatsUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "transactionId",
+				"type": "uint256"
+			}
+		],
+		"name": "TransactionRecorded",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "gameContract",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "gameHistory",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "betAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "correctNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "userGuess",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "payout",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "gasUsed",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "isWin",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getAllNumberFrequencies",
+		"outputs": [
+			{
+				"internalType": "uint256[10]",
+				"name": "",
+				"type": "uint256[10]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getLeaderboard",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalWinnings",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct GameStats.LeaderboardEntry[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_number",
+				"type": "uint256"
+			}
+		],
+		"name": "getNumberFrequency",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerStats",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalWinnings",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalBets",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "successfulGuesses",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalGames",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "winRate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "netProfit",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "biggestWin",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentWinStreak",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "maxWinStreak",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentLoseStreak",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "maxLoseStreak",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "avgBet",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalGasSpent",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "favoriteNumber",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct GameStats.PlayerStatsView",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerTransactionCount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "limit",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "offset",
+				"type": "uint256"
+			}
+		],
+		"name": "getPlayerTransactionHistory",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "betAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[3]",
+						"name": "generatedNumbers",
+						"type": "uint256[3]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "correctNumber",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userGuess",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "payout",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gasUsed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isWin",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GameStats.GameTransaction[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_player",
+				"type": "address"
+			}
+		],
+		"name": "getPlayerTransactionHistory",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "betAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[3]",
+						"name": "generatedNumbers",
+						"type": "uint256[3]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "correctNumber",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userGuess",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "payout",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gasUsed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isWin",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GameStats.GameTransaction[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "limit",
+				"type": "uint256"
+			}
+		],
+		"name": "getRecentTransactions",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "address",
+						"name": "player",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "betAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256[3]",
+						"name": "generatedNumbers",
+						"type": "uint256[3]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "correctNumber",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "userGuess",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "payout",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "gasUsed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bool",
+						"name": "isWin",
+						"type": "bool"
+					}
+				],
+				"internalType": "struct GameStats.GameTransaction[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getTotalTransactions",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "leaderboard",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "totalWinnings",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "playerTransactionIds",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "betAmount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256[3]",
+				"name": "generatedNumbers",
+				"type": "uint256[3]"
+			},
+			{
+				"internalType": "uint256",
+				"name": "correctNumber",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "userGuess",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "payout",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "gasUsed",
+				"type": "uint256"
+			}
+		],
+		"name": "recordGameResult",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_gameContract",
+				"type": "address"
+			}
+		],
+		"name": "setGameContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+]

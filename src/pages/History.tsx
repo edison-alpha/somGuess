@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
 import { useGameHistory, GameHistoryEntry } from '@/hooks/useGameHistory';
 import { 
@@ -23,6 +24,9 @@ const History: React.FC = () => {
   const { history, isLoading, error, stats: advancedStats, totalCount, refetch, exportData, fetchMore, fetchNetworkStats } = useGameHistory();
   const [viewMode, setViewMode] = useState<'overview' | 'detailed' | 'analytics'>('overview');
   const [networkStats, setNetworkStats] = useState<any>(null);
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   // GUNAKAN advancedStats dari useGameHistory untuk semua statistik
   const totalGames = advancedStats ? advancedStats.totalGames : 0;
@@ -50,36 +54,8 @@ const History: React.FC = () => {
     return `https://shannon-explorer.somnia.network/tx/${txHash}`;
   };
 
-  // Legacy stats calculation for backward compatibility
-  const getGameStats = () => {
-    if (advancedStats) {
-      return {
-        totalGames: advancedStats.totalGames,
-        wins: advancedStats.totalWins,
-        totalBet: advancedStats.totalBetAmount,
-        totalWinnings: advancedStats.totalWinnings,
-        winRate: advancedStats.winRate,
-        profit: advancedStats.netProfit
-      };
-    }
-    
-    const totalGames = history.length;
-    const wins = history.filter(game => game.isWinner).length;
-    const totalBet = history.reduce((sum, game) => sum + parseFloat(game.betAmount), 0);
-    const totalWinnings = history.reduce((sum, game) => sum + parseFloat(game.payout), 0);
-    const winRate = totalGames > 0 ? (wins / totalGames) * 100 : 0;
-    const profit = totalWinnings - totalBet;
 
-    return { totalGames, wins, totalBet, totalWinnings, winRate, profit };
-  };
-
-  // const handleExport = () => {
-  //   exportData(exportFormat);
-  // };
-
-  const legacyStats = getGameStats();
-
-  const stats = getGameStats();
+  // Cleaned up: removed duplicate/legacy stats logic
 
   // Fetch network stats when component mounts
   useEffect(() => {
@@ -90,12 +66,17 @@ const History: React.FC = () => {
     loadNetworkStats();
   }, [fetchNetworkStats]);
 
-  // DEBUG: Log data to console for troubleshooting
-  useEffect(() => {
-    console.log('[History] history:', history);
-    console.log('[History] advancedStats:', advancedStats);
-    console.log('[History] error:', error);
-  }, [history, advancedStats, error]);
+  // // DEBUG: Log data to console for troubleshooting
+  // useEffect(() => {
+  //   console.log('[History] history:', history);
+  //   console.log('[History] advancedStats:', advancedStats);
+  //   console.log('[History] error:', error);
+  // }, [history, advancedStats, error]);
+
+  // Always sort history from newest to oldest
+  const sortedHistory = [...history].sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  const pagedHistory = sortedHistory.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.ceil(sortedHistory.length / PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a] via-[#33396C] to-[#0f172a]">
@@ -168,8 +149,8 @@ const History: React.FC = () => {
               {/* Blok debug dihapus sesuai permintaan */}
 
               {/* View Mode Selector */}
-              <div className="flex items-center justify-center mb-6">
-                <div className="flex bg-slate-800/50 rounded-lg p-1">
+              <div className="flex justify-center w-full mb-6">
+                <div className="flex items-center gap-4 bg-slate-800/50 rounded-lg p-1">
                   {[
                     { id: 'overview', label: 'Overview', icon: BarChart3 },
                     { id: 'analytics', label: 'Analytics', icon: PieChart },
@@ -464,9 +445,9 @@ const History: React.FC = () => {
                       </div>
                     ) : (
                       <div className="space-y-4 overflow-x-auto md:overflow-x-visible">
-                        {history.map((game: GameHistoryEntry, index: number) => (
+                        {pagedHistory.map((game: GameHistoryEntry, index: number) => (
                           <motion.div
-                            key={game.txHash}
+                            key={game.txHash && game.txHash !== '' ? game.txHash : `game-${index}`}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.1 }}
@@ -522,6 +503,23 @@ const History: React.FC = () => {
                             </div>
                           </motion.div>
                         ))}
+                        {/* Pagination Controls */}
+                        {totalPages > 1 && (
+                          <div className="flex justify-center items-center gap-2 mt-6">
+                            {Array.from({ length: totalPages }).map((_, i) => (
+                              <button
+                                key={i}
+                                onClick={() => setPage(i + 1)}
+                                className={cn(
+                                  "w-8 h-8 rounded-full flex items-center justify-center font-bold border border-white/20 text-white transition-all",
+                                  page === i + 1 ? "bg-emerald-500/80 text-white border-emerald-400" : "bg-slate-800/60 hover:bg-emerald-700/40"
+                                )}
+                              >
+                                {i + 1}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </CardContent>
@@ -549,22 +547,7 @@ const History: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-transparent text-white text-center py-4 mt-8">
-        <div className="space-y-1">
-          <p className="text-sm">
-            Made with Fun by{" "}
-            <a
-              href="https://twitter.com/Somnia_Network"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-neon hover:underline"
-            >
-              somGuess
-            </a>
-          </p>
-          <p className="text-xs opacity-70">© 2025 All rights reserved</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

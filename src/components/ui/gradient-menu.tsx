@@ -1,14 +1,20 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IoHomeOutline, IoTimeOutline, IoTrophyOutline } from 'react-icons/io5';
-import { SiDiscord, SiX } from 'react-icons/si';
+import { SiDiscord } from 'react-icons/si';
+
+const BadgeIcon = (
+	<svg className="w-6 h-6" fill="white" viewBox="0 0 24 24">
+		<path d="M12 2l2.09 6.26L20 9.27l-5 3.64L16.18 20 12 16.77 7.82 20 9 12.91l-5-3.64 5.91-.91z" />
+	</svg>
+);
 
 const menuItems = [
 	{ title: 'Home', icon: <IoHomeOutline color="white" />, to: '/', gradientFrom: '#a955ff', gradientTo: '#ea51ff' },
 	{ title: 'History', icon: <IoTimeOutline color="white" />, to: '/history', gradientFrom: '#56CCF2', gradientTo: '#2F80ED' },
 	{ title: 'Leaderboard', icon: <IoTrophyOutline color="white" />, to: '/leaderboard', gradientFrom: '#FF9966', gradientTo: '#FF5E62' },
 	{ title: 'Discord', icon: <SiDiscord color="white" />, to: 'https://discord.com/invite/somnia', external: true, gradientFrom: '#80FF72', gradientTo: '#7EE8FA' },
-	{ title: 'Twitter', icon: <SiX color="white" />, to: 'https://x.com/Somnia_Network', external: true, gradientFrom: '#ffa9c6', gradientTo: '#f434e2' }
+	{ title: 'Badge', icon: BadgeIcon, to: '/badge', gradientFrom: '#ffa9c6', gradientTo: '#f434e2' }
 ];
 
 export default function GradientMenu() {

@@ -163,32 +163,35 @@ const BadgeTab: React.FC = () => {
   const fetchEligibilityAndMinted = async (addr: string) => {
     setLoading(true);
     try {
-      const eligibleArr: boolean[] = [];
-      const mintedArr: boolean[] = [];
-      for (let i = 0; i < BADGE_COUNT; i++) {
-        try {
-          const eligible = await publicClient.readContract({
-            address: BADGE_CONTRACT_ADDRESS,
-            abi: BADGE_CONTRACT_ABI,
-            functionName: 'isEligibleForBadge',
-            args: [addr as `0x${string}`, i],
-          });
-          eligibleArr.push(Boolean(eligible));
-        } catch (e) {
-          eligibleArr.push(false);
-        }
-        try {
-          const minted = await publicClient.readContract({
-            address: BADGE_CONTRACT_ADDRESS,
-            abi: BADGE_CONTRACT_ABI,
-            functionName: 'hasMintedBadge',
-            args: [addr as `0x${string}`, i],
-          });
-          mintedArr.push(Boolean(minted));
-        } catch (e) {
-          mintedArr.push(false);
-        }
-      }
+      // Prepare all eligibility calls
+      const eligiblePromises = Array.from({ length: BADGE_COUNT }, (_, i) =>
+        publicClient.readContract({
+          address: BADGE_CONTRACT_ADDRESS,
+          abi: BADGE_CONTRACT_ABI,
+          functionName: 'isEligibleForBadge',
+          args: [addr as `0x${string}`, i],
+        }).then(
+          (res) => Boolean(res),
+          () => false
+        )
+      );
+      // Prepare all minted calls
+      const mintedPromises = Array.from({ length: BADGE_COUNT }, (_, i) =>
+        publicClient.readContract({
+          address: BADGE_CONTRACT_ADDRESS,
+          abi: BADGE_CONTRACT_ABI,
+          functionName: 'hasMintedBadge',
+          args: [addr as `0x${string}`, i],
+        }).then(
+          (res) => Boolean(res),
+          () => false
+        )
+      );
+      // Run all in parallel
+      const [eligibleArr, mintedArr] = await Promise.all([
+        Promise.all(eligiblePromises),
+        Promise.all(mintedPromises)
+      ]);
       setEligibles(eligibleArr);
       setHasMinted(mintedArr);
     } catch (error) {

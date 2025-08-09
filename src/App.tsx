@@ -15,6 +15,7 @@ import Badge from "./pages/Badge";
 import { BackgroundGradientAnimationDemo } from "@/components/ui/demo";
 import GradientMenu from "@/components/ui/gradient-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { GlobalMouseClickSound } from "@/components/GlobalMouseClickSound";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <Sonner />
+            <GlobalMouseClickSound />
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />

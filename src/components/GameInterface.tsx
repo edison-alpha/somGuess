@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
@@ -16,11 +16,19 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Dice2, Trophy, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import somImage from '@/img/som.png';
+import soundFile from '@/sound/sound.mp3';
+import generateSuccessSound from '@/sound/generatesuccess.mp3';
+import winSound from '@/sound/win.mp3';
+import lossSound from '@/sound/loss.mp3';
 
 export function GameInterface() {
   const { address, isConnected } = useAccount();
   const { toast } = useToast();
   const isMobile = useIsMobile();
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const generateSuccessAudioRef = useRef<HTMLAudioElement>(null);
+  const winAudioRef = useRef<HTMLAudioElement>(null);
+  const lossAudioRef = useRef<HTMLAudioElement>(null);
   
   // Game numbers - show 3 numbers including the winning number from contract
   const [gameNumbers, setGameNumbers] = useState<number[]>([]);
@@ -77,12 +85,142 @@ export function GameInterface() {
     return allNumbers.slice(0, 3);
   };
 
+  // Sound effect functions
+  const playGenerateSuccessSound = () => {
+    if (generateSuccessAudioRef.current) {
+      generateSuccessAudioRef.current.currentTime = 0;
+      generateSuccessAudioRef.current.play().catch(error => {
+        console.log('Generate success sound play failed:', error);
+      });
+    }
+  };
+
+  const playWinSound = () => {
+    // Stop background music when win sound plays
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    
+    if (winAudioRef.current) {
+      winAudioRef.current.currentTime = 0;
+      winAudioRef.current.play().catch(error => {
+        console.log('Win sound play failed:', error);
+      });
+      
+      // Restart background music after win sound ends
+      winAudioRef.current.onended = () => {
+        if (audioRef.current && audioRef.current.paused) {
+          audioRef.current.play().catch(error => {
+            console.log('Failed to restart background music after win sound:', error);
+          });
+        }
+      };
+    }
+  };
+
+  const playLossSound = () => {
+    // Stop background music when loss sound plays
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    
+    if (lossAudioRef.current) {
+      lossAudioRef.current.currentTime = 0;
+      lossAudioRef.current.play().catch(error => {
+        console.log('Loss sound play failed:', error);
+      });
+      
+      // Restart background music after loss sound ends
+      lossAudioRef.current.onended = () => {
+        if (audioRef.current && audioRef.current.paused) {
+          audioRef.current.play().catch(error => {
+            console.log('Failed to restart background music after loss sound:', error);
+          });
+        }
+      };
+    }
+  };
+
   // Initialize game - start with number generation phase
   useEffect(() => {
     if (isConnected && gamePhase === 'generate' && gameNumbers.length === 0) {
       // Don't auto-generate, wait for user to click generate
     }
   }, [isConnected, gamePhase, gameNumbers.length]);
+
+  // Background music management
+  useEffect(() => {
+    const audio = audioRef.current;
+    const generateSuccessAudio = generateSuccessAudioRef.current;
+    const winAudio = winAudioRef.current;
+    const lossAudio = lossAudioRef.current;
+    let handleFirstInteraction: (() => void) | null = null;
+
+    if (audio) {
+      audio.volume = 0.3; // Set volume to 30%
+      audio.loop = true;
+    }
+
+    // Setup sound effects volume
+    if (generateSuccessAudio) generateSuccessAudio.volume = 0.6;
+    if (winAudio) winAudio.volume = 0.7;
+    if (lossAudio) lossAudio.volume = 0.6;
+
+    if (audio) {
+      const playMusic = async () => {
+        try {
+          // Try to play immediately
+          await audio.play();
+          console.log('Background music started successfully');
+        } catch (error) {
+          console.log('Audio autoplay blocked by browser, waiting for user interaction:', error);
+          
+          // Auto-play blocked, set up user interaction handler
+          handleFirstInteraction = async () => {
+            try {
+              await audio.play();
+              console.log('Background music started after user interaction');
+              // Remove the event listeners once music starts
+              if (handleFirstInteraction) {
+                document.removeEventListener('click', handleFirstInteraction);
+                document.removeEventListener('keydown', handleFirstInteraction);
+                document.removeEventListener('touchstart', handleFirstInteraction);
+                document.removeEventListener('mousedown', handleFirstInteraction);
+                handleFirstInteraction = null;
+              }
+            } catch (err) {
+              console.log('Failed to play audio on user interaction:', err);
+            }
+          };
+
+          // Add event listeners for user interactions
+          document.addEventListener('click', handleFirstInteraction, { passive: true });
+          document.addEventListener('keydown', handleFirstInteraction, { passive: true });
+          document.addEventListener('touchstart', handleFirstInteraction, { passive: true });
+          document.addEventListener('mousedown', handleFirstInteraction, { passive: true });
+        }
+      };
+
+      // Small delay to ensure component is fully mounted
+      const timer = setTimeout(playMusic, 100);
+
+      // Cleanup: stop music when component unmounts (navigating away)
+      return () => {
+        clearTimeout(timer);
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+        // Clean up event listeners
+        if (handleFirstInteraction) {
+          document.removeEventListener('click', handleFirstInteraction);
+          document.removeEventListener('keydown', handleFirstInteraction);
+          document.removeEventListener('touchstart', handleFirstInteraction);
+          document.removeEventListener('mousedown', handleFirstInteraction);
+        }
+      };
+    }
+  }, []);
 
   // Update game numbers when generated from smart contract
   useEffect(() => {
@@ -92,6 +230,8 @@ export function GameInterface() {
       // Move to selection phase after numbers are generated
       if (gamePhase === 'generate') {
         setGamePhase('select');
+        // Play generate success sound
+        playGenerateSuccessSound();
       }
     }
   }, [generatedNumbers, gamePhase]);
@@ -130,8 +270,10 @@ export function GameInterface() {
       setTimeout(() => {
         
         if (isWinner) {
+          playWinSound(); // Play win sound
           setShowWinningModal(true);
         } else {
+          playLossSound(); // Play loss sound
           setShowLosingModal(true);
         }
       }, 2000);
@@ -176,6 +318,8 @@ export function GameInterface() {
       if (numbers && numbers.length === 3) {
         setGameNumbers(numbers);
         setGamePhase('select');
+        // Play generate success sound
+        playGenerateSuccessSound();
         toast({
           title: "Numbers Generated!",
           description: `Ready to play with numbers: ${numbers.join(', ')}`,
@@ -252,6 +396,8 @@ export function GameInterface() {
       if (numbers && numbers.length === 3) {
         setGameNumbers(numbers);
         setGamePhase('select');
+        // Play generate success sound
+        playGenerateSuccessSound();
       }
     } catch (error) {
       console.error('Error auto-generating numbers:', error);
@@ -264,6 +410,35 @@ export function GameInterface() {
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-[#0f172a] via-[#33396C] to-[#0f172a]">
+      {/* Background Music */}
+      <audio 
+        ref={audioRef} 
+        preload="auto" 
+        playsInline
+        webkit-playsinline="true"
+        muted={false}
+      >
+        <source src={soundFile} type="audio/mpeg" />
+        <source src={soundFile} type="audio/mp3" />
+        Your browser does not support the audio element.
+      </audio>
+
+      {/* Sound Effects */}
+      <audio ref={generateSuccessAudioRef} preload="auto">
+        <source src={generateSuccessSound} type="audio/mpeg" />
+        <source src={generateSuccessSound} type="audio/mp3" />
+      </audio>
+
+      <audio ref={winAudioRef} preload="auto">
+        <source src={winSound} type="audio/mpeg" />
+        <source src={winSound} type="audio/mp3" />
+      </audio>
+
+      <audio ref={lossAudioRef} preload="auto">
+        <source src={lossSound} type="audio/mpeg" />
+        <source src={lossSound} type="audio/mp3" />
+      </audio>
+      
       {/* Navbar */}
       <Navbar />
       
